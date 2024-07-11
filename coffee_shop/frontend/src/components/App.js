@@ -13,7 +13,7 @@ export default class App extends Component {
         <HomePage />
       </div>
     );
-  }
+  } 
 }
 
 const appDiv = document.getElementById("app");

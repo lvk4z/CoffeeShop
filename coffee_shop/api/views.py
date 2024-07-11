@@ -74,3 +74,10 @@ class UserInBase(APIView):
         }
 
         return JsonResponse(data, status=status.HTTP_200_OK)
+    
+class LeaveMeeting(APIView):
+    def post(self, request, format=None):
+        if 'coffee_name' in self.request.session:
+            self.request.session.pop('coffee_name')
+            #usunać typa z ordersów
+        return Response({'Message': 'Success'}, status=status.HTTP_200_OK)

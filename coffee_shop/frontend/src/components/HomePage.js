@@ -30,18 +30,15 @@ const HomePage = () => {
     } else {
       return (
         <Grid container spacing={3}>
-          <Grid item xs={12} align="center">
+          <Grid item xs={10} align="center">
             <Typography variant="h3" compact="h3">
-              House Party
+              Coffee shop
             </Typography>
           </Grid>
-          <Grid item xs={12} align="center">
+          <Grid item xs={10} align="center">
             <ButtonGroup disableElevation variant="contained" color="primary">
-              <Button color="primary" to="/join" component={Link}>
-                Join a Room
-              </Button>
-              <Button color="secondary" to="/create" component={Link}>
-                Create a Room
+              <Button color="primary" to="/register" component={Link}>
+                Enter
               </Button>
             </ButtonGroup>
           </Grid>

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import MeetingView, CreateMeetingView, GetMeeting, UserInBase, RegisterAsMember
+from .views import MeetingView, CreateMeetingView, GetMeeting, UserInBase, RegisterAsMember, LeaveMeeting
 
 urlpatterns = [
     path('meeting', MeetingView.as_view()),
@@ -7,4 +7,5 @@ urlpatterns = [
     path('get-meeting', GetMeeting.as_view()),
     path('register-as-member', RegisterAsMember.as_view()),
     path('user-in-base', UserInBase.as_view()),
+    path('leave-meeting', LeaveMeeting.as_view()),
 ]   
