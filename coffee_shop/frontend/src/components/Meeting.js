@@ -24,6 +24,7 @@ const Meeting = () => {
   }, [meetingID]);
 
   const leaveButtonPressed = (event) => {
+    event.preventDefault();
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -31,6 +32,7 @@ const Meeting = () => {
     fetch("/api/leave-meeting", requestOptions).then(async (response) => {
       if (response.ok) {
         navigate("/");
+        console.log("moving");
       } else {
         setError(data.error || "Registration failed");
       }
@@ -39,22 +41,22 @@ const Meeting = () => {
 
   return (
     <Grid container spacing={2} align="center">
-      <Grid item xs="12">
+      <Grid item xs="10">
         <Typography variant="h4" component="h4">
           Data: {meetingDetails.date}
         </Typography>
       </Grid>
-      <Grid item xs="12">
+      <Grid item xs="10">
         <Typography variant="h6" component="h6">
           Status: {meetingDetails.status}
         </Typography>
       </Grid>
-      <Grid item xs="12">
+      <Grid item xs="10">
         <Typography variant="h6" component="h6">
           Host: {meetingDetails.host}
         </Typography>
       </Grid>
-      <Grid item xs="12">
+      <Grid item xs="10">
         <Button variant="contained" color="primary" onClick={leaveButtonPressed}>
           Erase Yourself
         </Button>
