@@ -10,3 +10,8 @@ class CreateMeetingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Meeting
         fields = ('event_date', 'host')
+
+class UpdateMeetingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Meeting
+        fields = ('id','event_date', 'host')

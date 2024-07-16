@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics, status
 from .models import Meeting
-from .serializers import MeetingSerializer, CreateMeetingSerializer
+from .serializers import MeetingSerializer, CreateMeetingSerializer, UpdateMeetingSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
@@ -81,3 +81,37 @@ class LeaveMeeting(APIView):
             self.request.session.pop('coffee_name')
             #usunać typa z ordersów
         return Response({'Message': 'Success'}, status=status.HTTP_200_OK)
+
+class UpdateMeeting(APIView):
+    serializer_class = UpdateMeetingSerializer
+
+    def patch(self, request, format=None):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            event_date = serializer.data.get('event_date')
+            host = serializer.data.get('host')
+            id = serializer.data.get('id')
+            
+            queryset = Meeting.objects.filter(event_date=event_date)
+            if not queryset.exists():
+                print("nasxnianx")
+                print(event_date,host,id,queryset)
+                return Response({'msg': 'Meeting not found'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            meeting = queryset.first()
+            user_id = self.request.session.get('coffee_name')
+            if user_id != "admin":
+                return Response({'msg': 'You are not allowed to perform this action'}, status=status.HTTP_403_FORBIDDEN)
+            
+            # Update the meeting details
+            meeting.event_date = event_date
+            meeting.host = host
+            meeting.save(update_fields=['event_date', 'host'])
+            print(event_date,host,id,queryset[0].host)
+
+            return Response(MeetingSerializer(meeting).data, status=status.HTTP_200_OK)
+        
+        return Response({'msg': 'Invalid data provided'}, status=status.HTTP_400_BAD_REQUEST)

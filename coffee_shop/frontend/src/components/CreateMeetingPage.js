@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Alert from "@material-ui/lab/Alert";
 import {
   Button,
   Grid,
@@ -10,11 +11,18 @@ import {
   Select,
   MenuItem,
   InputLabel,
+  Collapse,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 
-const CreateMeetingPage = () => {
-  const defaultStatus = "PL";
+const CreateMeetingPage = ({
+  pUpdate = false,
+  pDate,
+  pStatus,
+  pHost,
+  pUpdateCallback,
+  pID,
+}) => {
   const navigate = useNavigate();
 
   const getNextSunday = () => {
@@ -42,8 +50,16 @@ const CreateMeetingPage = () => {
   };
 
   const [date, setDate] = useState(getNextSunday());
-  const [status, setStatus] = useState(defaultStatus);
-  const [host, setHost] = useState(getHost());
+  const [status, setStatus] = useState(pStatus);
+  const [host, setHost] = useState(pHost ? pHost : getHost());
+  const [errorMsg, setErrorMsg] = useState(" ");
+  const [succesMsg, setSuccesMsg] = useState(" ");
+
+  useEffect(() => {
+    if (pUpdate && pUpdateCallback) {
+      pUpdateCallback({ date, status, host });
+    }
+  }, [pDate, pStatus, pHost, pUpdate, pUpdateCallback]);
 
   const handleCreateClicked = () => {
     const requestOptions = {
@@ -60,6 +76,28 @@ const CreateMeetingPage = () => {
       .then((data) => navigate("/meeting/" + data.id));
   };
 
+  const handleUpdateClicked = () => {
+    const requestOptions = {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        event_date: date,
+        host: host,
+        id: 5,
+      }),
+    };
+    fetch("http://127.0.0.1:8000/api/update-meeting", requestOptions).then(
+      (response) => {
+        if (response.ok) {
+          setSuccesMsg("Meeting updated succesfully!");
+        } else {
+          setErrorMsg("Update failed");
+        }
+      }
+    );
+    pUpdateCallback();
+  };
+
   const handleDateChange = (event) => {
     setDate(event.target.value);
   };
@@ -68,11 +106,62 @@ const CreateMeetingPage = () => {
     setHost(event.target.value);
   };
 
+  const title = pUpdate ? "Update Meeting" : "Create a meeting";
+
+  const renderCreateButtons = () => {
+    return (
+      <Grid container spacing={1}>
+        <Grid item xs={12} align="center">
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={handleCreateClicked}
+          >
+            Create
+          </Button>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Button color="secondary" variant="contained" to="/" component={Link}>
+            Back
+          </Button>
+        </Grid>
+      </Grid>
+    );
+  };
+
+  const renderUpdateButtons = () => {
+    return (
+      <Grid item xs={12} align="center">
+        <Button
+          color="primary"
+          variant="contained"
+          onClick={handleUpdateClicked}
+        >
+          Update
+        </Button>
+      </Grid>
+    );
+  };
+
   return (
     <Grid container spacing={2} alignItems="center">
       <Grid item xs={12}>
+        <Collapse in={errorMsg != " " || succesMsg != " "}>
+          {succesMsg != " " ? (
+            <Alert severity="success" onClose={() => setSuccesMsg(" ")}>
+              {succesMsg};
+            </Alert>
+          ) : (
+            <Alert severity="error" onClose={() => setErrorMsg(" ")}>
+              {errorMsg};
+            </Alert>
+          )}
+          ;
+        </Collapse>
+      </Grid>
+      <Grid item xs={12}>
         <Typography component="h4" variant="h4" align="center">
-          Create A Meeting
+          {title}
         </Typography>
       </Grid>
       <Grid item xs={12} align="center">
@@ -105,20 +194,7 @@ const CreateMeetingPage = () => {
           </Select>
         </FormControl>
       </Grid>
-      <Grid item xs={12} align="center">
-        <Button
-          color="primary"
-          variant="contained"
-          onClick={handleCreateClicked}
-        >
-          Create
-        </Button>
-      </Grid>
-      <Grid item xs={12} align="center">
-        <Button color="secondary" variant="contained" to="/" component={Link}>
-          Back
-        </Button>
-      </Grid>
+      {pUpdate ? renderUpdateButtons() : renderCreateButtons()}
     </Grid>
   );
 };

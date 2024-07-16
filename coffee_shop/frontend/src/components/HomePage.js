@@ -24,18 +24,19 @@ const HomePage = () => {
       });
   }, []);
 
+
   const renderHomePage = () => {
     if (coffeeName) {
-      return <Navigate to={`/meeting/5`} replace={true} />;
+      return <Navigate to={`/meeting/5`} replace={false} />;
     } else {
       return (
         <Grid container spacing={3}>
-          <Grid item xs="10" align="center">
+          <Grid item xs={10} align="center">
             <Typography variant="h3" compact="h3">
               Coffee shop
             </Typography>
           </Grid>
-          <Grid item xs="10" align="center">
+          <Grid item xs={10} align="center">
             <ButtonGroup disableElevation variant="contained" color="primary">
               <Button color="primary" to="/register" component={Link}>
                 Enter
