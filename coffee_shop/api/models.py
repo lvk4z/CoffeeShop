@@ -1,6 +1,5 @@
 from django.db import models
 
-# Create your models here.
 class Meeting(models.Model):
     event_date = models.DateTimeField(auto_now=False, auto_now_add=False)
     TOOKPLACE = "TP"
@@ -23,3 +22,39 @@ class Meeting(models.Model):
         (KRAKOWSCY, "W domu nr 136a")
     ]
     host = models.CharField(max_length=1, choices=HOST_CHOICES)
+
+class Drink(models.Model):
+    name = models.CharField(max_length=12)
+    description = models.CharField(max_length=100, default=" ")
+
+    def __str__(self):
+        return self.name
+
+class Guest(models.Model):
+    MICZEK = "M"
+    ZEGAR = "Z"
+    STASZEK = "S"
+    KRAKOWSKI = "K"
+    HOUSELESS = "H"
+    HOUSES = [
+        (MICZEK, "House of Miczek"),
+        (ZEGAR, "Hosuse of Zegar Tadeusz"),
+        (STASZEK, "House of Zegar Stanisław"),
+        (KRAKOWSKI, "House of Krakowski"),
+        (HOUSELESS, "Houseless")
+    ]
+    coname = models.CharField(max_length=20)
+    house = models.CharField(max_length=1, choices=HOUSES, default=HOUSELESS)
+
+    def __str__(self) -> str:
+        return self.coname
+
+class Orders(models.Model):
+    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
+    guest = models.ForeignKey(Guest, on_delete=models.CASCADE)
+    drink = models.ForeignKey(Drink, on_delete=models.CASCADE)
+
+class Menu(models.Model):
+    drinks = models.ManyToManyField(Drink)
+
+
