@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Meeting
+from .models import Meeting, Guest, Drink, Orders, Menu
 
 class MeetingSerializer(serializers.ModelSerializer):
     class Meta:

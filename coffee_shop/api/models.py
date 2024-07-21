@@ -26,6 +26,7 @@ class Meeting(models.Model):
 class Drink(models.Model):
     name = models.CharField(max_length=12)
     description = models.CharField(max_length=100, default=" ")
+    image = models.ImageField(upload_to='Drink_images/', blank=True, null=True)
 
     def __str__(self):
         return self.name
