@@ -39,7 +39,7 @@ body {
     box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
     /* Add some shadow for better visibility */
     transform: translate(-50%, -50%);
-    background-color: rgba(120, 93, 49, 0.7);
+    background-color: rgba(177, 165, 146, 0.7);
     /* Semi-transparent background color */
     color: rgb(249, 249, 249);
 }
