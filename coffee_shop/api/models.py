@@ -1,5 +1,16 @@
 from django.db import models
 
+class Drink(models.Model):
+    name = models.CharField(max_length=25)
+    description = models.CharField(max_length=200, default=" ")
+    image = models.ImageField(upload_to='Drink_images/', blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+    
+class Menu(models.Model):
+    drinks = models.ManyToManyField(Drink)
+
 class Meeting(models.Model):
     event_date = models.DateTimeField(auto_now=False, auto_now_add=False)
     TOOKPLACE = "TP"
@@ -22,14 +33,7 @@ class Meeting(models.Model):
         (KRAKOWSCY, "W domu nr 136a")
     ]
     host = models.CharField(max_length=1, choices=HOST_CHOICES)
-
-class Drink(models.Model):
-    name = models.CharField(max_length=12)
-    description = models.CharField(max_length=100, default=" ")
-    image = models.ImageField(upload_to='Drink_images/', blank=True, null=True)
-
-    def __str__(self):
-        return self.name
+    menu = models.OneToOneField(Menu, on_delete=models.CASCADE, null=True, blank=True)
 
 class Guest(models.Model):
     MICZEK = "M"
@@ -50,12 +54,8 @@ class Guest(models.Model):
     def __str__(self) -> str:
         return self.coname
 
+
 class Orders(models.Model):
     meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
     guest = models.ForeignKey(Guest, on_delete=models.CASCADE)
     drink = models.ForeignKey(Drink, on_delete=models.CASCADE)
-
-class Menu(models.Model):
-    drinks = models.ManyToManyField(Drink)
-
-

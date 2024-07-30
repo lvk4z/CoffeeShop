@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { Button, Typography, Grid } from "@material-ui/core";
 import { useNavigate } from "react-router-dom";
 import CreateMeetingPage from "./CreateMeetingPage";
+import Menu from "./Menu"
 
 const Meeting = () => {
   const navigate = useNavigate();
@@ -95,6 +96,7 @@ const Meeting = () => {
             <Typography variant="h2" component="h2">
               ID: {meetingID}
             </Typography>
+            <Menu ID={meetingID}/>
           </Grid>
           <Grid item xs={12}>
             <Typography variant="h4" component="h4">

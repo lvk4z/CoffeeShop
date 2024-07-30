@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics, status
-from .models import Meeting
-from .serializers import MeetingSerializer, CreateMeetingSerializer, UpdateMeetingSerializer
+from .models import Meeting, Guest, Orders, Menu, Drink
+from .serializers import MeetingSerializer, CreateMeetingSerializer, UpdateMeetingSerializer, OrdersSerializer, GuestSerializer, DrinkSerializer, MenuSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
@@ -9,6 +9,22 @@ from django.http import JsonResponse
 class MeetingView(generics.ListAPIView):
     queryset = Meeting.objects.all()
     serializer_class = MeetingSerializer
+
+class GuestView(generics.ListAPIView):
+    queryset = Guest.objects.all()
+    serializer_class = GuestSerializer
+
+class DrinkView(generics.ListAPIView):
+    queryset = Drink.objects.all()
+    serializer_class = DrinkSerializer
+
+class OrdersView(generics.ListAPIView):
+    queryset = Orders.objects.all()
+    serializer_class = OrdersSerializer
+
+class MenuView(generics.ListAPIView):
+    queryset = Menu.objects.all()
+    serializer_class = MenuSerializer
 
 class GetMeeting(APIView):
     serializer_class = MeetingSerializer
@@ -23,6 +39,29 @@ class GetMeeting(APIView):
                 return Response(data, status=status.HTTP_200_OK)
             return Response({'Not found' : 'doesnt exist'},status=status.HTTP_404_NOT_FOUND)
         return Response({'Bad request' : ' bad parameters'},status=status.HTTP_400_BAD_REQUEST)
+    
+class GetMenu(APIView):
+    lookup_url_kwarg = 'id'
+
+    def get(self, request, format=None):
+        id = request.GET.get(self.lookup_url_kwarg)
+        if id is not None:
+            try:
+                meeting = Meeting.objects.get(id=id)
+            except Meeting.DoesNotExist:
+                return Response({'error': 'Meeting not found'}, status=status.HTTP_404_NOT_FOUND)
+            
+            if meeting.menu:
+                drinks = meeting.menu.drinks.all()  # Access drinks through the menu
+                drinks_data = DrinkSerializer(drinks, many=True).data
+                return Response(drinks_data, status=status.HTTP_200_OK)
+            else:
+                drinks = Menu.objects.first().drinks.all()
+                drinks_data = DrinkSerializer(drinks, many=True).data
+                return Response(drinks_data, status=status.HTTP_200_OK)
+        
+        return Response({'error': 'ID parameter not provided'}, status=status.HTTP_400_BAD_REQUEST)
+
     
 class RegisterAsMember(APIView):
     lookup_url_kwarg = 'coffee_name'
@@ -51,15 +90,17 @@ class CreateMeetingView(APIView):
         if serializer.is_valid():
             event_date = serializer.data.get('event_date')
             host = serializer.data.get('host')
-            # poprawić filtrowanie daty
-            #client = self.request.session.session_key
+            menu_id = serializer.data.get('menu')
+            menu = Menu.objects.all()
+            print(serializer.data)
             queryset = Meeting.objects.filter(event_date=event_date)
             if queryset.exists():
                 meeting = queryset[0]
                 meeting.host = host
-                meeting.save(update_fields=['host'])
+                meeting.menu = menu[2]
+                meeting.save(update_fields=['host','menu'])
             else:
-                meeting = Meeting(event_date=event_date, host=host)
+                meeting = Meeting(event_date=event_date, host=host, menu=menu[2])
                 meeting.save()
             
             return Response(MeetingSerializer(meeting).data, status=status.HTTP_200_OK)

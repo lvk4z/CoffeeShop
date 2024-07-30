@@ -1,32 +1,50 @@
-html, body{
+/* Reset margins and padding, ensure full height for body */
+html,
+body {
     margin: 0;
     padding: 0;
     height: 100%;
-} 
+}
 
-#main{
+/* Main container */
+#main {
     position: fixed;
     width: 100%;
     height: 100%;
     left: 0;
     top: 0;
-    color: black;
-    background-color:white;
+    color: rgb(249, 249, 249);
 }
 
-#app{
+/* App container with background image */
+#app {
     width: 100%;
     height: 100%;
+    background-image: url('/static/bg.jpg');
+    background-size: cover;
+    /* Adjust as needed */
+    background-position: center;
+    /* Center the background image */
+    background-repeat: no-repeat;
+    /* Ensure the image does not repeat */
 }
 
-.center{
+/* Centered content container */
+.center {
     position: absolute;
     top: 50%;
     left: 50%;
+    width: 65%;
+    height: 100%;
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
+    /* Add some shadow for better visibility */
     transform: translate(-50%, -50%);
+    background-color: rgba(120, 93, 49, 0.7);
+    /* Semi-transparent background color */
+    color: rgb(249, 249, 249);
 }
 
-
+/* Additional styling for MUI Select */
 .MuiSelect-selectMenu {
-    min-width: 150px!important;
+    min-width: 150px !important;
 }

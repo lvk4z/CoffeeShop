@@ -52,6 +52,7 @@ const CreateMeetingPage = ({
   const [date, setDate] = useState(getNextSunday());
   const [status, setStatus] = useState(pStatus);
   const [host, setHost] = useState(pHost ? pHost : getHost());
+  const [menu, setMenu] = useState(3)
   const [errorMsg, setErrorMsg] = useState(" ");
   const [succesMsg, setSuccesMsg] = useState(" ");
 
@@ -69,8 +70,10 @@ const CreateMeetingPage = ({
         event_date: date,
         host: host,
         status: status,
+        menu: 3,
       }),
     };
+    console.log(requestOptions);
     fetch("api/create-meeting", requestOptions)
       .then((response) => response.json())
       .then((data) => navigate("/meeting/" + data.id));
@@ -83,6 +86,7 @@ const CreateMeetingPage = ({
       body: JSON.stringify({
         event_date: date,
         host: host,
+        menu: 3,
         id: 5,
       }),
     };
