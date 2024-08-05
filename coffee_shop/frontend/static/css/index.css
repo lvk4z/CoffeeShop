@@ -8,12 +8,11 @@ body {
 
 /* Main container */
 #main {
-    position: fixed;
+    position: absolute;
     width: 100%;
     height: 100%;
     left: 0;
     top: 0;
-    color: rgb(249, 249, 249);
 }
 
 /* App container with background image */
@@ -41,7 +40,19 @@ body {
     transform: translate(-50%, -50%);
     background-color: rgba(177, 165, 146, 0.7);
     /* Semi-transparent background color */
-    color: rgb(249, 249, 249);
+    
+}
+
+.middle-card{
+    width:80%;
+    background-color: aliceblue;
+    margin: auto;
+    top:5%;
+    position: relative;
+    border-radius: 10px;
+    align-items: center;
+    display: flex;
+    padding: 20px;
 }
 
 /* Additional styling for MUI Select */

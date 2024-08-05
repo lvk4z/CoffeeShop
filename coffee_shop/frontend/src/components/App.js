@@ -11,7 +11,9 @@ export default class App extends Component {
   render() {
     return (
       <div className="center">
-        <HomePage />
+        <div className="middle-card">
+          <HomePage />
+        </div>
       </div>
     );
   } 

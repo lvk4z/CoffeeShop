@@ -14,7 +14,7 @@ class GuestView(generics.ListAPIView):
     queryset = Guest.objects.all()
     serializer_class = GuestSerializer
 
-class DrinkView(generics.ListAPIView):
+class DrinkView(generics.CreateAPIView):
     queryset = Drink.objects.all()
     serializer_class = DrinkSerializer
 
@@ -22,7 +22,7 @@ class OrdersView(generics.ListAPIView):
     queryset = Orders.objects.all()
     serializer_class = OrdersSerializer
 
-class MenuView(generics.ListAPIView):
+class MenuView(generics.CreateAPIView):
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
 
