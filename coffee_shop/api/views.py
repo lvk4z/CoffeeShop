@@ -14,7 +14,7 @@ class GuestView(generics.ListAPIView):
     queryset = Guest.objects.all()
     serializer_class = GuestSerializer
 
-class DrinkView(generics.CreateAPIView):
+class DrinkView(generics.ListAPIView):
     queryset = Drink.objects.all()
     serializer_class = DrinkSerializer
 
@@ -22,7 +22,7 @@ class OrdersView(generics.ListAPIView):
     queryset = Orders.objects.all()
     serializer_class = OrdersSerializer
 
-class MenuView(generics.CreateAPIView):
+class MenuView(generics.ListAPIView):
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
 
@@ -97,10 +97,10 @@ class CreateMeetingView(APIView):
             if queryset.exists():
                 meeting = queryset[0]
                 meeting.host = host
-                meeting.menu = menu[2]
+                meeting.menu = menu[3]
                 meeting.save(update_fields=['host','menu'])
             else:
-                meeting = Meeting(event_date=event_date, host=host, menu=menu[2])
+                meeting = Meeting(event_date=event_date, host=host, menu=menu[3])
                 meeting.save()
             
             return Response(MeetingSerializer(meeting).data, status=status.HTTP_200_OK)

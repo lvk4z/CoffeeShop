@@ -1,43 +1,40 @@
-/* Reset margins and padding, ensure full height for body */
 html,
 body {
     margin: 0;
-    padding: 0;
-    height: 100%;
+    padding: 0; 
+    overflow: hidden;
 }
 
-/* Main container */
 #main {
     position: absolute;
     width: 100%;
     height: 100%;
     left: 0;
     top: 0;
+    overflow: auto;
 }
 
 /* App container with background image */
 #app {
     width: 100%;
-    height: 100%;
+    height: 200%;
     background-image: url('/static/bg.jpg');
     background-size: cover;
     /* Adjust as needed */
     background-position: center;
     /* Center the background image */
-    background-repeat: no-repeat;
+    background-attachment: fixed;
     /* Ensure the image does not repeat */
+    display: flex;
+        justify-content: center;
 }
 
 /* Centered content container */
 .center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 65%;
-    height: 100%;
+    width: 70%;
+    
     box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
     /* Add some shadow for better visibility */
-    transform: translate(-50%, -50%);
     background-color: rgba(177, 165, 146, 0.7);
     /* Semi-transparent background color */
     
