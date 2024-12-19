@@ -10,6 +10,7 @@ import OrdersPage from "./OrdersPage";
 import RegisterPage from "./RegisterPage";
 import CreateMeetingPage from "./CreateMeetingPage";
 import Meeting from "./Meeting";
+import Navbar from "./Navbar";
 import { Grid, Button, ButtonGroup, Typography } from "@material-ui/core";
 
 const HomePage = () => {
@@ -50,6 +51,7 @@ const HomePage = () => {
 
   return (
     <Router>
+      <Navbar />
       <Routes>
         <Route path="/" element={renderHomePage()} />
         <Route path="/register" element={<RegisterPage />} />

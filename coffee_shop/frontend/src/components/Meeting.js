@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { Button, Typography, Grid } from "@material-ui/core";
 import { useNavigate } from "react-router-dom";
 import CreateMeetingPage from "./CreateMeetingPage";
-import Menu from "./Menu"
+import Menu from "./Menu";
 
 const Meeting = () => {
   const navigate = useNavigate();

@@ -31,7 +31,7 @@ const Drink = ({ item }) => {
 
   const handleOrder = () => {
     console.log(`Ordered ${quantity} of ${item.name}`);
-    // Add your order handling logic here
+    
     handleClose();
   };
 
