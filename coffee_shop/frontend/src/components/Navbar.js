@@ -59,6 +59,7 @@ const Navbar = () => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
+      position="fixed"
         sx={{
           backgroundColor: "#17191b !important",
           color: "white !important",

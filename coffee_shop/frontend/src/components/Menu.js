@@ -3,20 +3,27 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Button, Typography, Container, CircularProgress, Grid } from "@material-ui/core";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-const MenuDiv = ({ ID }) => {
+const MenuDiv = () => {
+  const meetingID = useSelector((state) => state.user.meetingID);
   const [drinks, setDrinks] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log(ID)
-    fetch("/api/get-menu?id=" + ID)
-      .then((response) => response.json())
-      .then((data) => {
-        setDrinks(data);
-        setLoading(false);
-      });
-  }, []);
+    if (meetingID) {
+      fetch("/api/get-menu?id=" + meetingID)
+        .then((response) => response.json())
+        .then((data) => {
+          setDrinks(data);
+          setLoading(false);
+        });
+    } else {
+      console.error("meetingID is null");
+      setLoading(false);
+    }
+  }, [meetingID]);
+
   if (loading) {
     return (
       <Container>

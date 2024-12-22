@@ -30,6 +30,7 @@
     "@mui/icons-material": "^6.2.0",
     "@mui/material": "^6.2.0",
     "@reduxjs/toolkit": "^2.5.0",
+    "axios": "^1.7.9",
     "react-redux": "^7.2.9",
     "react-router-dom": "^6.24.0"
   }

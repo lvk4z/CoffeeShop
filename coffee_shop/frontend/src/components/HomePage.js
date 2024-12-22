@@ -11,40 +11,52 @@ import RegisterPage from "./RegisterPage";
 import CreateMeetingPage from "./CreateMeetingPage";
 import Meeting from "./Meeting";
 import Navbar from "./Navbar";
-import { Grid, Button, ButtonGroup, Typography } from "@material-ui/core";
+import { Grid2, Button, ButtonGroup, Typography } from "@mui/material";
+import {useDispatch, useSelector} from "react-redux";
+import { setCoffeeName } from "../redux/features/userSlice"; 
+import { fetchMeeting } from "../redux/features/userSlice"; 
+
 
 const HomePage = () => {
-  const [coffeeName, setCoffeeName] = useState(null);
+  const dispatch = useDispatch();
+  const coffee_name = useSelector((state) => state.user.coffeeName);
+  const meetingID = useSelector((state) => state.user.meetingID);
+  
+  useEffect(() => {
+    dispatch(fetchMeeting());
+  },[dispatch]);
 
   useEffect(() => {
     fetch("/api/user-in-base")
       .then((response) => response.json())
       .then((data) => {
-        setCoffeeName(data.coffee_name);
-        console.log(data);
+        dispatch(setCoffeeName(data.coffee_name));
+        
+        console.log(data.coffee_name);
       });
-  }, []);
-
+  }, [dispatch, coffee_name]);
 
   const renderHomePage = () => {
-    if (coffeeName) {
-      return <Navigate to={`/meeting/5`} replace={false} />;
+    if (coffee_name != null) {
+      return <Navigate to={`/meeting/${meetingID}`} replace={false} />;
     } else {
       return (
-        <Grid container spacing={3}>
-          <Grid item xs={10} align="center">
-            <Typography variant="h3" compact="h3">
-              Coffee shop
+        <Grid2 container spacing={2} align="center" sx={{
+          marginTop: "64px",
+        }}>
+          <Grid2 item xs={12} align="center">
+            <Typography variant="h3" >
+              Coffee shop {meetingID}
             </Typography>
-          </Grid>
-          <Grid item xs={10} align="center">
+          </Grid2>
+          <Grid2 item xs={12} align="center">
             <ButtonGroup disableElevation variant="contained" color="primary">
               <Button color="primary" to="/register" component={Link}>
-                Enter
+                Enter 
               </Button>
             </ButtonGroup>
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       );
     }
   };

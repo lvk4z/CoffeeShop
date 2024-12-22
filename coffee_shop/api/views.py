@@ -76,9 +76,6 @@ class RegisterAsMember(APIView):
             return JsonResponse({'coffee_name': name}, status=status.HTTP_200_OK)
         return JsonResponse({'error': 'Invalid coffee name'}, status=status.HTTP_400_BAD_REQUEST)
 
-
-    
-    
 class CreateMeetingView(APIView):
     serializer_class = CreateMeetingSerializer
 
@@ -156,3 +153,14 @@ class UpdateMeeting(APIView):
             return Response(MeetingSerializer(meeting).data, status=status.HTTP_200_OK)
         
         return Response({'msg': 'Invalid data provided'}, status=status.HTTP_400_BAD_REQUEST)
+    
+class CurrentMeetingView(APIView):
+    def get(self, request, format=None):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+        
+        queryset = Meeting.objects.all()
+        if queryset.exists():
+            meeting = queryset[queryset.count()-1]
+            return Response({'id': meeting.id}, status=status.HTTP_200_OK)
+        return Response({'Not found' : 'doesnt exist'},status=status.HTTP_404_NOT_FOUND)
