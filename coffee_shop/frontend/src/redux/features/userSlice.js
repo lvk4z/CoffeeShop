@@ -38,7 +38,7 @@ export const userSlice = createSlice({
         builder.addCase(fetchMeeting.fulfilled, (state, action) => {
             state.loading = false;
             state.meetingID = action.payload.id;
-            console.log("ustalnoe meetingID", action.payload.id); 
+            console.log("inUserSlice","ustalnoe meetingID", action.payload.id); 
         });
         builder.addCase(fetchMeeting.rejected, (state, action) => {
             state.loading = false;

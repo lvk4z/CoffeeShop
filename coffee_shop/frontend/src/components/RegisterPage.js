@@ -40,7 +40,8 @@ const RegisterPage = () => {
         try {
           const data = JSON.parse(text);
           if (response.ok) {
-            navigate("/meeting/5");
+            navigate("/", { replace: true });
+            window.location.reload();
           } else {
             setError(data.error || "Registration failed");
           }

@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Button, Typography, Grid2 } from "@mui/material"
+import { Typography } from "@mui/material";
+import Grid from "@mui/material/Grid2";
+import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import CreateMeetingPage from "./CreateMeetingPage";
 import Menu from "./Menu";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchMeeting } from "../redux/features/userSlice";
 
 const Meeting = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const meetingID = useSelector((state) => state.user.meetingID);
   const [meetingDetails, setMeetingDetails] = useState({
@@ -16,7 +20,12 @@ const Meeting = () => {
   const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
+    dispatch(fetchMeeting());
+  }, [dispatch]);
+
+  useEffect(() => {
     if (meetingID) {
+      console.log("fetching meeting details", meetingID);
       fetch("/api/get-meeting?id=" + meetingID)
         .then((response) => response.json())
         .then((data) => {
@@ -41,6 +50,7 @@ const Meeting = () => {
     fetch("/api/leave-meeting", requestOptions).then((response) => {
       if (response.ok) {
         navigate("/");
+        window.location.reload();
       } else {
         setError(data.error || "Registration failed");
       }
@@ -53,7 +63,7 @@ const Meeting = () => {
 
   const renderSettingsButton = () => {
     return (
-      <Grid2 item xs={12} align="center">
+      <Grid item size={12} >
         <Button
           variant="contained"
           color="secondary"
@@ -61,14 +71,14 @@ const Meeting = () => {
         >
           settings
         </Button>
-      </Grid2>
+      </Grid>
     );
   };
 
   const renderSettings = () => {
     return (
-      <Grid2 container spacing={1}>
-        <Grid2 item xs={12} align="center">
+      <Grid container spacing={1}>
+        <Grid item size={12}>
           <CreateMeetingPage
             pUpdate={true}
             pDate={meetingDetails.date}
@@ -77,8 +87,8 @@ const Meeting = () => {
             pUpdateCallback={() => {}}
             pID={meetingID}
           />
-        </Grid2>
-        <Grid2 item xs={12} align="center">
+        </Grid>
+        <Grid item size={12}>
           <Button
             variant="contained"
             color="secondary"
@@ -86,40 +96,37 @@ const Meeting = () => {
           >
             Close
           </Button>
-        </Grid2>
-      </Grid2>
+        </Grid>
+      </Grid>
     );
   };
 
   return (
-    <Grid2 container spacing={2} alignItems="center" direction="column">
+    <Grid container spacing={2} alignItems="center" direction="column">
       {showSettings ? (
         renderSettings()
       ) : (
         <>
-          <Grid2 item xs={12}>
-            <Typography variant="h2" component="h2">
-              ID: {meetingID}
-            </Typography>
+          <Grid item size={12}>
             <Menu />
-          </Grid2>
-          <Grid2 item xs={12}>
+          </Grid>
+          <Grid item size={12}>
             <Typography variant="h4" component="h4">
               Data: {meetingDetails.date}
             </Typography>
-          </Grid2>
-          <Grid2 item xs={12}>
+          </Grid>
+          <Grid item xs={12}>
             <Typography variant="h6" component="h6">
               Status: {meetingDetails.status}
             </Typography>
-          </Grid2>
-          <Grid2 item xs={12}>
+          </Grid>
+          <Grid item xs={12}>
             <Typography variant="h6" component="h6">
               Host: {meetingDetails.host}
             </Typography>
-          </Grid2>
+          </Grid>
           {meetingDetails.host === "S" ? renderSettingsButton() : null}
-          <Grid2 item xs={12}>
+          <Grid item xs={12}>
             <Button
               variant="contained"
               color="primary"
@@ -127,10 +134,10 @@ const Meeting = () => {
             >
               Erase Yourself
             </Button>
-          </Grid2>
+          </Grid>
         </>
       )}
-    </Grid2>
+    </Grid>
   );
 };
 

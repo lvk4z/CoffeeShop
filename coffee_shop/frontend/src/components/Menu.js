@@ -1,26 +1,30 @@
 import Drink from "./Drink";
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { Button, Typography, Container, CircularProgress, Grid } from "@material-ui/core";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { Typography, Container, CircularProgress } from "@mui/material";
+import Grid from "@mui/material/Grid2";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchMeeting } from "../redux/features/userSlice";
 
 const MenuDiv = () => {
+  const dispatch = useDispatch();
   const meetingID = useSelector((state) => state.user.meetingID);
   const [drinks, setDrinks] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const loading = useSelector(state => state.user.loading);
 
+useEffect(() => {
+    dispatch(fetchMeeting());
+  },[dispatch]);
+  
   useEffect(() => {
     if (meetingID) {
       fetch("/api/get-menu?id=" + meetingID)
         .then((response) => response.json())
         .then((data) => {
           setDrinks(data);
-          setLoading(false);
+          console.log("drinks", data);  
         });
     } else {
-      console.error("meetingID is null");
-      setLoading(false);
+      console.log("meetingID is null");
     }
   }, [meetingID]);
 
@@ -34,15 +38,16 @@ const MenuDiv = () => {
 
   return (
     <Container>
-      <Typography variant="h5" align="center" component="div">
-        <Grid container spacing={3}>
-          {drinks.map((item) => (
-            <Grid item  key={item.name}>
-              <Drink item={item} />
-            </Grid>
-          ))}
-        </Grid>
+      <Typography variant="h4" align="center" gutterBottom>
+        Menu
       </Typography>
+      <Grid container spacing={3} justifyContent="center">
+        {drinks.map((drink) => (
+          <Grid item xs={12} sm={6} md={4} lg={3} key={drink.name}>
+            <Drink item={drink} />
+          </Grid>
+        ))}
+      </Grid>
     </Container>
   );
 };

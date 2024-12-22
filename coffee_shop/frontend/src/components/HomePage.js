@@ -11,7 +11,8 @@ import RegisterPage from "./RegisterPage";
 import CreateMeetingPage from "./CreateMeetingPage";
 import Meeting from "./Meeting";
 import Navbar from "./Navbar";
-import { Grid2, Button, ButtonGroup, Typography } from "@mui/material";
+import { Button, ButtonGroup, Typography } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import {useDispatch, useSelector} from "react-redux";
 import { setCoffeeName } from "../redux/features/userSlice"; 
 import { fetchMeeting } from "../redux/features/userSlice"; 
@@ -37,26 +38,24 @@ const HomePage = () => {
   }, [dispatch, coffee_name]);
 
   const renderHomePage = () => {
-    if (coffee_name != null) {
+    if (coffee_name) {
       return <Navigate to={`/meeting/${meetingID}`} replace={false} />;
     } else {
       return (
-        <Grid2 container spacing={2} align="center" sx={{
-          marginTop: "64px",
-        }}>
-          <Grid2 item xs={12} align="center">
+        <Grid container spacing={2}>
+          <Grid item size={12}>
             <Typography variant="h3" >
               Coffee shop {meetingID}
             </Typography>
-          </Grid2>
-          <Grid2 item xs={12} align="center">
+          </Grid>
+          <Grid item size={12} >
             <ButtonGroup disableElevation variant="contained" color="primary">
               <Button color="primary" to="/register" component={Link}>
                 Enter 
               </Button>
             </ButtonGroup>
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       );
     }
   };
