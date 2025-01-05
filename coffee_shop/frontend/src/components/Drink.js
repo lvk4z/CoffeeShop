@@ -6,12 +6,12 @@ import {
   CardContent,
   Button,
   Typography,
-  Grid,
   Modal,
   Box,
   TextField,
   IconButton,
-} from "@material-ui/core";
+} from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import CloseIcon from "@material-ui/icons/Close";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
@@ -25,6 +25,7 @@ const Drink = ({ item }) => {
   };
 
   const handleClose = () => {
+    setQuantity(1);
     setOpen(false);
   };
 
@@ -45,22 +46,23 @@ const Drink = ({ item }) => {
    };
   return (
     <>
-      <Card>
-        <CardActionArea onClick={handleOpen}>
-          <CardMedia
-            component="img"
-            height="140"
-            width="170"
-            image={item.image}
-            alt={item.name}
-          />
-          <CardContent>
-            <Typography variant="h6" align="center" component="div">
-              {item.name}
-            </Typography>
-          </CardContent>
-        </CardActionArea>
-      </Card>
+      <Grid container justifyContent="center">
+        <Card sx={{ width: 500 }}>
+          <CardActionArea onClick={handleOpen}>
+            <CardMedia
+              component="img"
+              height="140"
+              image={item.image}
+              alt={item.name}
+            />
+            <CardContent>
+              <Typography variant="h6" align="center" component="div">
+                {item.name}
+              </Typography>
+            </CardContent>
+          </CardActionArea>
+        </Card>
+      </Grid>
       <Modal open={open} onClose={handleClose}>
         <Box
           sx={{
@@ -77,8 +79,8 @@ const Drink = ({ item }) => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: 10,
-            justifyContent: "space-around"
+            gap: 2,
+            justifyContent: "space-around",
           }}
         >
           <Box

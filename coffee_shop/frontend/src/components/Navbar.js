@@ -26,6 +26,22 @@ const Navbar = () => {
     setMobileOpen(!mobileOpen);
   };
 
+  const leaveButtonPressed = (event) => {
+    event.preventDefault();
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    };
+    fetch("/api/leave-meeting", requestOptions).then((response) => {
+      if (response.ok) {
+        navigate("/");
+        window.location.reload();
+      } else {
+        setError(data.error || "Registration failed");
+      }
+    });
+  };
+
   const drawer = (
     <Box
       sx={{ width: 250 }}
@@ -103,7 +119,7 @@ const Navbar = () => {
             <Button color="inherit" onClick={() => navigate("/orders")}>
               Zamówienia
             </Button>
-            <Button color="inherit" onClick={() => navigate("/register")}>
+            <Button color="inherit" onClick={leaveButtonPressed}>
               Wyjdź <ExitToAppOutlinedIcon />
             </Button>
           </Stack>

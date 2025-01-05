@@ -41,9 +41,9 @@ useEffect(() => {
       <Typography variant="h4" align="center" gutterBottom>
         Menu
       </Typography>
-      <Grid container spacing={3} justifyContent="center">
+      <Grid container spacing={8}>
         {drinks.map((drink) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={drink.name}>
+          <Grid item size={{ xs: 12, md: 3 }} key={drink.name}>
             <Drink item={drink} />
           </Grid>
         ))}

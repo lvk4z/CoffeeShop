@@ -21,7 +21,7 @@ const Meeting = () => {
 
   useEffect(() => {
     dispatch(fetchMeeting());
-  }, [dispatch]);
+  }, []);
 
   useEffect(() => {
     if (meetingID) {
@@ -41,21 +41,7 @@ const Meeting = () => {
     }
   }, [meetingID]);
 
-  const leaveButtonPressed = (event) => {
-    event.preventDefault();
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    };
-    fetch("/api/leave-meeting", requestOptions).then((response) => {
-      if (response.ok) {
-        navigate("/");
-        window.location.reload();
-      } else {
-        setError(data.error || "Registration failed");
-      }
-    });
-  };
+  
 
   const updateShowSettings = (value) => {
     setShowSettings(value);
@@ -110,31 +96,7 @@ const Meeting = () => {
           <Grid item size={12}>
             <Menu />
           </Grid>
-          <Grid item size={12}>
-            <Typography variant="h4" component="h4">
-              Data: {meetingDetails.date}
-            </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h6" component="h6">
-              Status: {meetingDetails.status}
-            </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h6" component="h6">
-              Host: {meetingDetails.host}
-            </Typography>
-          </Grid>
-          {meetingDetails.host === "S" ? renderSettingsButton() : null}
-          <Grid item xs={12}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={leaveButtonPressed}
-            >
-              Erase Yourself
-            </Button>
-          </Grid>
+          {meetingDetails.host === "Z" ? renderSettingsButton() : null}
         </>
       )}
     </Grid>
