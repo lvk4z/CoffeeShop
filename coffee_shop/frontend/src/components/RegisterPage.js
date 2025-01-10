@@ -31,7 +31,8 @@ const RegisterPage = () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        coffee_name: name,
+        coname: name,
+        house: house,
       }),
     };
     fetch("/api/register-as-member", requestOptions)
@@ -39,6 +40,7 @@ const RegisterPage = () => {
         const text = await response.text();
         try {
           const data = JSON.parse(text);
+          console.log(data);
           if (response.ok) {
             navigate("/", { replace: true });
             window.location.reload();

@@ -20,7 +20,7 @@ import { fetchMeeting } from "../redux/features/userSlice";
 
 const HomePage = () => {
   const dispatch = useDispatch();
-  const coffee_name = useSelector((state) => state.user.coffeeName);
+  const coname = useSelector((state) => state.user.coffeeName);
   const meetingID = useSelector((state) => state.user.meetingID);
   
   useEffect(() => {
@@ -31,14 +31,13 @@ const HomePage = () => {
     fetch("/api/user-in-base")
       .then((response) => response.json())
       .then((data) => {
-        dispatch(setCoffeeName(data.coffee_name));
-        
-        console.log(data.coffee_name);
+        console.log(data);
+        dispatch(setCoffeeName(data.coname));
       });
-  }, [dispatch, coffee_name]);
+  }, [dispatch, coname]);
 
   const renderHomePage = () => {
-    if (coffee_name) {
+    if (coname) {
       return <Navigate to={`/meeting/${meetingID}`} replace={false} />;
     } else {
       return (

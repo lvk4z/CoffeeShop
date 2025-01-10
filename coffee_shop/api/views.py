@@ -6,23 +6,23 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
 
-class MeetingView(generics.CreateAPIView):
+class MeetingView(generics.ListAPIView):
     queryset = Meeting.objects.all()
     serializer_class = MeetingSerializer
 
-class GuestView(generics.CreateAPIView):
+class GuestView(generics.ListAPIView):
     queryset = Guest.objects.all()
     serializer_class = GuestSerializer
 
-class DrinkView(generics.CreateAPIView):
+class DrinkView(generics.ListAPIView):
     queryset = Drink.objects.all()
     serializer_class = DrinkSerializer
 
-class OrdersView(generics.CreateAPIView):
+class OrdersView(generics.ListAPIView):
     queryset = Orders.objects.all()
     serializer_class = OrdersSerializer
 
-class MenuView(generics.CreateAPIView):
+class MenuView(generics.ListAPIView):
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
 
@@ -64,17 +64,20 @@ class GetMenu(APIView):
 
     
 class RegisterAsMember(APIView):
-    lookup_url_kwarg = 'coffee_name'
+    serializer_class = GuestSerializer
 
     def post(self, request, format=None):
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
 
-        name = request.data.get(self.lookup_url_kwarg)
-        if name is not None:
-            self.request.session['coffee_name'] = name
-            return JsonResponse({'coffee_name': name}, status=status.HTTP_200_OK)
-        return JsonResponse({'error': 'Invalid coffee name'}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.serializer_class(data=request.data)
+        if  serializer.is_valid():
+            coname = serializer.data.get('coname')
+            house = serializer.data.get('house')
+            guest = Guest.objects.create(coname=coname, house=house)
+            self.request.session['coname'] = coname
+            return JsonResponse({'coname': guest.coname, 'house': guest.house}, status=status.HTTP_200_OK)
+        return JsonResponse({'error': 'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
 
 class CreateMeetingView(APIView):
     serializer_class = CreateMeetingSerializer
@@ -89,7 +92,6 @@ class CreateMeetingView(APIView):
             host = serializer.data.get('host')
             menu_id = serializer.data.get('menu')
             menu = Menu.objects.all()
-            print(serializer.data)
             queryset = Meeting.objects.filter(event_date=event_date)
             if queryset.exists():
                 meeting = queryset[0]
@@ -107,16 +109,21 @@ class UserInBase(APIView):
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
 
-        data = {
-            'coffee_name': self.request.session.get('coffee_name')
-        }
+        
+        coname =  self.request.session.get('coname')
+        
+        try:
+            guest = Guest.objects.get(coname=coname)
+        except Guest.DoesNotExist:
+            return Response({'error': 'Guest not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        return JsonResponse(data, status=status.HTTP_200_OK)
+
+        return Response(GuestSerializer(guest).data, status=status.HTTP_200_OK)
     
 class LeaveMeeting(APIView):
     def post(self, request, format=None):
-        if 'coffee_name' in self.request.session:
-            self.request.session.pop('coffee_name')
+        if 'coname' in self.request.session:
+            self.request.session.pop('coname')
             #usunać typa z ordersów
         return Response({'Message': 'Success'}, status=status.HTTP_200_OK)
 
@@ -140,7 +147,7 @@ class UpdateMeeting(APIView):
                 return Response({'msg': 'Meeting not found'}, status=status.HTTP_400_BAD_REQUEST)
             
             meeting = queryset.first()
-            user_id = self.request.session.get('coffee_name')
+            user_id = self.request.session.get('coname')
             if user_id != "admin":
                 return Response({'msg': 'You are not allowed to perform this action'}, status=status.HTTP_403_FORBIDDEN)
             
@@ -164,3 +171,29 @@ class CurrentMeetingView(APIView):
             meeting = queryset[queryset.count()-1]
             return Response({'id': meeting.id}, status=status.HTTP_200_OK)
         return Response({'Not found' : 'doesnt exist'},status=status.HTTP_404_NOT_FOUND)
+
+class CreateOrder(APIView):
+    def post(self, request, format=None):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+        
+        coname = self.request.session.get('coname')
+        if coname is None:
+            return Response({'msg': 'You are not allowed to perform this action'}, status=status.HTTP_403_FORBIDDEN)
+        
+        drink_id = request.data.get('drink')
+        if drink_id is None:
+            return Response({'msg': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            drink = Drink.objects.get(id=drink_id)
+        except Drink.DoesNotExist:
+            return Response({'msg': 'Drink not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        meeting = Meeting.objects.all()
+        if meeting.exists():
+            meeting = meeting[meeting.count()-1]
+            order = Orders(drink=drink, user_id=user_id, meeting=meeting)
+            order.save()
+            return Response({'msg': 'Order created'}, status=status.HTTP_200_OK)
+        return Response({'msg': 'No meeting found'}, status=status.HTTP_404_NOT_FOUND)
