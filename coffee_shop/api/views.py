@@ -172,28 +172,51 @@ class CurrentMeetingView(APIView):
             return Response({'id': meeting.id}, status=status.HTTP_200_OK)
         return Response({'Not found' : 'doesnt exist'},status=status.HTTP_404_NOT_FOUND)
 
-class CreateOrder(APIView):
+class CreateOrderView(APIView):
+    serializer_class = OrdersSerializer
+
     def post(self, request, format=None):
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
-        
+            
         coname = self.request.session.get('coname')
-        if coname is None:
-            return Response({'msg': 'You are not allowed to perform this action'}, status=status.HTTP_403_FORBIDDEN)
-        
-        drink_id = request.data.get('drink')
-        if drink_id is None:
-            return Response({'msg': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
-        
+        quantity = request.data.get('quantity')
+        drink_name = request.data.get('drink_name')
+
         try:
-            drink = Drink.objects.get(id=drink_id)
+            drink = Drink.objects.get(name=drink_name)
+        except Drink.DoesNotExist:
+            return Response({'msg': 'Drink not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            guest = Guest.objects.get(coname=coname)
         except Drink.DoesNotExist:
             return Response({'msg': 'Drink not found'}, status=status.HTTP_404_NOT_FOUND)
         
         meeting = Meeting.objects.all()
         if meeting.exists():
             meeting = meeting[meeting.count()-1]
-            order = Orders(drink=drink, user_id=user_id, meeting=meeting)
-            order.save()
+            for _ in range(quantity):
+                order = Orders(meeting=meeting, guest=guest, drink=drink)
+                order.save()
             return Response({'msg': 'Order created'}, status=status.HTTP_200_OK)
-        return Response({'msg': 'No meeting found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'msg': 'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
+    
+class GetGuestOrdersView(APIView):
+    def get(self, request, format=None):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+
+        coname = self.request.session.get('coname')
+        if not coname:
+            return Response({'error': 'Guest not logged in'}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            guest = Guest.objects.get(coname=coname)
+        except Guest.DoesNotExist:
+            return Response({'error': 'Guest not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        orders = Orders.objects.filter(guest=guest)
+        orders_data = OrdersSerializer(orders, many=True).data
+
+        return Response({'userName': coname, 'orders': orders_data}, status=status.HTTP_200_OK)

@@ -31,7 +31,18 @@ const Drink = ({ item }) => {
 
   const handleOrder = () => {
     console.log(`Ordered ${quantity} of ${item.name}`);
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        drink_name: item.name,
+        quantity: quantity,
+      }),
     
+  };
+    fetch("/api/create-order", requestOptions)
+      .then((response) => response.json())
+      .then((data) => console.log(data));
     handleClose();
   };
 
