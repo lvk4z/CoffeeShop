@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { List, ListItem, ListItemText, Typography } from "@mui/material";
 
 const OrdersPage = () => {
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState(new Map());
   const [userName, setUserName] = useState("");
 
   useEffect(() => {
@@ -11,21 +11,25 @@ const OrdersPage = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
-        const groupedOrders = data.orders.reduce((acc, order) => {
-          acc[order] = (acc[order] || 0) + 1;
-          return acc;
-        }, {});
         setUserName(data.userName);
-        setOrders(groupedOrders);
+        const map = new Map()
+        data.orders.forEach(element => {
+          map.set(element.name, (map.get(element.name) || 0) + 1)
+        })
+        setOrders(map);
+        console.log(map)
       });
   }, []);
+
+
+
   return (
     <div>
-      <Typography variant="h4">Orders for {userName}</Typography>
+      <Typography variant="h4">Zamówione przez: {userName}</Typography>
       <List>
-        {Object.entries(orders).map(([order, count]) => (
+        {Array.from(orders.entries()).map(([order, count]) => (
           <ListItem key={order}>
-            <ListItemText primary={`${order.drink?.name} x${count}`} />
+            <ListItemText primary={`x${count}:   ${order} `} />
           </ListItem>
         ))}
       </List>

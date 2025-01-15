@@ -52,7 +52,7 @@ class GetMenu(APIView):
                 return Response({'error': 'Meeting not found'}, status=status.HTTP_404_NOT_FOUND)
             
             if meeting.menu:
-                drinks = meeting.menu.drinks.all()  # Access drinks through the menu
+                drinks = meeting.menu.drinks.all() 
                 drinks_data = DrinkSerializer(drinks, many=True).data
                 return Response(drinks_data, status=status.HTTP_200_OK)
             else:
@@ -217,6 +217,11 @@ class GetGuestOrdersView(APIView):
             return Response({'error': 'Guest not found'}, status=status.HTTP_404_NOT_FOUND)
 
         orders = Orders.objects.filter(guest=guest)
-        orders_data = OrdersSerializer(orders, many=True).data
+        drinks = []
+        for order in orders:
+            drink = order.drink
+            drink_data = DrinkSerializer(drink).data
+            drinks.append(drink_data)
+        
 
-        return Response({'userName': coname, 'orders': orders_data}, status=status.HTTP_200_OK)
+        return JsonResponse({'userName': coname, 'orders': drinks}, status=status.HTTP_200_OK)
