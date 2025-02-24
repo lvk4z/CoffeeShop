@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-sz4z(x5_4(va!t0#&3^hc5n%yr2rcs21iwk8@u()b+vxnz)1we
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["coffeeshop-va08.onrender.com", "copijesz.pl"]
+ALLOWED_HOSTS = ["coffeeshop-va08.onrender.com", "copijesz.pl", "127.0.0.1", "www.copijesz.pl"]
 
 
 # Application definition
