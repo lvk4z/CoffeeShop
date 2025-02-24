@@ -15,6 +15,7 @@ export const fetchMeeting = createAsyncThunk(
 const initialState = {
     meetingID: null,
     coffeeName: "",
+    house:"",
     loading: false,
     error: null,
 };
@@ -29,6 +30,9 @@ export const userSlice = createSlice({
         setCoffeeName: (state, action) => {
             state.coffeeName = action.payload;
         },
+        setHouse: (state, action) => {
+            state.house = action.payload
+        }
     },
     extraReducers: (builder) => {
         builder.addCase(fetchMeeting.pending, (state) => {
@@ -47,7 +51,7 @@ export const userSlice = createSlice({
     },
 });
 
-export const {setMeetingID, setCoffeeName} = userSlice.actions;
+export const {setMeetingID, setCoffeeName, setHouse} = userSlice.actions;
 
 export default userSlice.reducer;
 

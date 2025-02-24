@@ -14,13 +14,14 @@ import Navbar from "./Navbar";
 import { Button, ButtonGroup, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import {useDispatch, useSelector} from "react-redux";
-import { setCoffeeName } from "../redux/features/userSlice"; 
+import { setCoffeeName, setHouse } from "../redux/features/userSlice"; 
 import { fetchMeeting } from "../redux/features/userSlice"; 
 
 
 const HomePage = () => {
   const dispatch = useDispatch();
   const coname = useSelector((state) => state.user.coffeeName);
+  const hosue = useSelector((state) => state.user.house )
   const meetingID = useSelector((state) => state.user.meetingID);
   
   useEffect(() => {
@@ -31,8 +32,8 @@ const HomePage = () => {
     fetch("/api/user-in-base")
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         dispatch(setCoffeeName(data.coname));
+        dispatch(setHouse(data.house));
       });
   }, [dispatch, coname]);
 
