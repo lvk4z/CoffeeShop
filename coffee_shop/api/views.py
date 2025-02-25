@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
 
-class MeetingView(generics.ListAPIView):
+class MeetingView(generics.CreateAPIView):
     queryset = Meeting.objects.all()
     serializer_class = MeetingSerializer
 
@@ -14,15 +14,15 @@ class GuestView(generics.ListAPIView):
     queryset = Guest.objects.all()
     serializer_class = GuestSerializer
 
-class DrinkView(generics.ListAPIView):
+class DrinkView(generics.CreateAPIView):
     queryset = Drink.objects.all()
     serializer_class = DrinkSerializer
 
-class OrdersView(generics.ListAPIView):
+class OrdersView(generics.CreateAPIView):
     queryset = Orders.objects.all()
     serializer_class = OrdersSerializer
 
-class MenuView(generics.ListAPIView):
+class MenuView(generics.CreateAPIView):
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
 
