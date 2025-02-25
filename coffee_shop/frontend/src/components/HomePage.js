@@ -44,11 +44,12 @@ const HomePage = () => {
       return (
         <Grid container spacing={2}>
           <Grid item size={12}>
-            <Typography variant="h3" >
+            <Typography variant="h3" align="center">
+              Welcome to
               Coffee shop {meetingID}
             </Typography>
           </Grid>
-          <Grid item size={12} >
+          <Grid item size={12} align="center">
             <ButtonGroup disableElevation variant="contained" color="primary">
               <Button color="primary" to="/register" component={Link}>
                 Enter 
