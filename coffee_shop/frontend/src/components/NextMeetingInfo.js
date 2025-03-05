@@ -1,16 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getFullHostName } from "../utils/utils";
-
-const getSunday = () => {
-  const today = new Date();
-  const dayOfWeek = today.getDay();
-  const daysUntilSunday = 7 - dayOfWeek;
-  const nextSunday = new Date(today);
-  nextSunday.setDate(today.getDate() + daysUntilSunday);
-  nextSunday.setHours(12, 0, 0, 0);
-  return nextSunday;
-};
+import { getFullHostName, getNextSunday } from "../utils/utils";
 
 const formatTime = (value) => value.toString().padStart(2, "0");
 
@@ -20,7 +10,7 @@ const NextMeetingInfo = ({ target }) => {
   const host = getFullHostName(useSelector((state) => state.user.host));
   
   useEffect(() => {
-    const targetDate = getSunday();
+    const targetDate = getNextSunday(false);
 
     const updateCountdown = () => {
       const now = new Date();

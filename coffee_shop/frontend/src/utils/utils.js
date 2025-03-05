@@ -1,11 +1,14 @@
-const getNextSunday = () => {
+const getNextS2unday = (formatted) => {
     const today = new Date();
     const dayOfWeek = today.getDay();
     const daysUntilSunday = 7 - dayOfWeek;
     const nextSunday = new Date(today);
     nextSunday.setDate(today.getDate() + daysUntilSunday);
-    nextSunday.setHours(12, 0, 0, 0);
-    return nextSunday.toISOString().split(".")[0];
+    if(formatted){
+        nextSunday.setHours(12, 0, 0, 0);
+        return nextSunday.toISOString().split(".")[0];
+    }
+    return nextSunday;
 };
 
 const getHost = () => {
@@ -21,7 +24,7 @@ const getHost = () => {
         return "K";
     }
 };
-
+    
 const getFullHostName = (initial) => {
     switch(initial){
         case "Z":
