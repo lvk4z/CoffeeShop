@@ -6,7 +6,6 @@ export const fetchMeeting = createAsyncThunk(
     async  () => {
         const response = await axios.get("/api/current-meeting");
         console.log(response.data);
-        console.log("w reducerze");
         return response.data;
     }
 
@@ -15,7 +14,7 @@ export const fetchMeeting = createAsyncThunk(
 const initialState = {
     meetingID: null,
     coffeeName: "",
-    house:"",
+    host:"",
     loading: false,
     error: null,
 };
@@ -31,7 +30,7 @@ export const userSlice = createSlice({
             state.coffeeName = action.payload;
         },
         setHouse: (state, action) => {
-            state.house = action.payload
+            state.host = action.payload
         }
     },
     extraReducers: (builder) => {
@@ -42,7 +41,6 @@ export const userSlice = createSlice({
         builder.addCase(fetchMeeting.fulfilled, (state, action) => {
             state.loading = false;
             state.meetingID = action.payload.id;
-            console.log("inUserSlice","ustalnoe meetingID", action.payload.id); 
         });
         builder.addCase(fetchMeeting.rejected, (state, action) => {
             state.loading = false;

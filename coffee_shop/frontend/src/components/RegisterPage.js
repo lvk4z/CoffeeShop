@@ -66,7 +66,7 @@ const RegisterPage = () => {
     <Grid container spacing={2} align="center">
       <Grid item xs={12}>
         <Typography variant="h4" component="h4">
-          Register here
+          Zapisz się tutaj
         </Typography>
       </Grid>
       <Grid item xs={12}>
@@ -82,7 +82,7 @@ const RegisterPage = () => {
       </Grid>
       <Grid item xs={12} align="center">
         <FormControl component="fieldset">
-          <InputLabel id="house-label">Choose your house</InputLabel>
+          <InputLabel id="house-label">Wybierz rodzinę</InputLabel>
           <Select
             labelId="house-label"
             id="house"
@@ -99,17 +99,17 @@ const RegisterPage = () => {
       </Grid>
       <Grid item xs={12}>
         <Button variant="contained" color="primary" onClick={signInClicked}>
-          Sign in
+          Zapisz się
         </Button>
       </Grid>
       <Grid item xs={12}>
         <Button variant="contained" color="primary" to="/" component={Link}>
-          As a guest
+          Wejdź jako gość
         </Button>
       </Grid>
       <Grid item xs={12}>
         <Button variant="contained" color="secondary" to="/" component={Link}>
-          Back
+          Cofnij
         </Button>
       </Grid>
     </Grid>

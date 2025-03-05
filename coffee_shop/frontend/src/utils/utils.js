@@ -22,4 +22,17 @@ const getHost = () => {
     }
 };
 
-export {getHost, getNextSunday};
+const getFullHostName = (initial) => {
+    switch(initial){
+        case "Z":
+            return "Zegarów nr 17";
+        case "S":
+            return "Zegarów nr 17a"; 
+        case "M":
+            return "Miczków";
+        case "K":
+            return "Krakowskich";   
+    }
+}
+
+export {getHost, getNextSunday, getFullHostName};
