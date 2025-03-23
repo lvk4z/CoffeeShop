@@ -1,34 +1,58 @@
-import React, { Component } from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { List, ListItem, ListItemText, Typography } from "@mui/material";
+
+// Custom hook do interwału
+function useInterval(callback, delay) {
+  const savedCallback = useRef();
+
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  useEffect(() => {
+    function tick() {
+      savedCallback.current();
+    }
+    if (delay !== null) {
+      let id = setInterval(tick, delay);
+      return () => clearInterval
+    }
+    console.log(delay);
+  }, [delay]);
+}
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState(new Map());
   const [userName, setUserName] = useState("");
+  console.log("OrdersPage");
+  const fetchOrders = () => {
+    fetch("/api/get-guest-orders")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (!data.orders || !Array.isArray(data.orders)) {
+          throw new Error("Nieprawidłowy format odpowiedzi z API");
+        }
 
-  useEffect(() => {
-    let interval = setInterval(() => {
-      fetch("/api/get-guest-orders")
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Błąd pobierania zamówień");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          setUserName(data.userName);
-          const map = new Map();
-          data.orders.forEach((element) => {
+        setUserName(data.userName || "Nieznany użytkownik");
+
+        const map = new Map();
+        data.orders.forEach((element) => {
+          if (element.name) {
             map.set(element.name, (map.get(element.name) || 0) + 1);
-          });
-          setOrders(map);
-        })
-        .catch((error) => console.error("Błąd:", error));
-    }, 5000); 
-    return () => clearInterval(interval);
-  }, []);
+          }
+        });
+        console.log("Pobrane zamówienia:", map);
+        setOrders(new Map(map));
+      })
+      .catch((error) => console.error("Błąd pobierania zamówień:", error));
+  };
 
-
+  useInterval(fetchOrders, 1000); 
 
   return (
     <div>
@@ -36,12 +60,12 @@ const OrdersPage = () => {
       <List>
         {Array.from(orders.entries()).map(([order, count]) => (
           <ListItem key={order}>
-            <ListItemText primary={`x${count}:   ${order} `} />
+            <ListItemText primary={`x${count}: ${order}`} />
           </ListItem>
         ))}
       </List>
     </div>
   );
-}
+};
 
 export default OrdersPage;
