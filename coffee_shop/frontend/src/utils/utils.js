@@ -1,4 +1,4 @@
-const getNextS2unday = (formatted) => {
+const getNextSunday = (formatted) => {
     const today = new Date();
     const dayOfWeek = today.getDay();
     const daysUntilSunday = 7 - dayOfWeek;

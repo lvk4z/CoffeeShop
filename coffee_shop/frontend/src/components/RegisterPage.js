@@ -74,11 +74,7 @@ const RegisterPage = () => {
     <Grid container spacing={2} align="center">
       <Grid item xs={12}>
         <Typography variant="h4" component="h4">
-<<<<<<< HEAD
-          Zarejestruj się
-=======
           Zapisz się tutaj
->>>>>>> 8ecf4cb78e7a980b464223646c0506188ab23d25
         </Typography>
       </Grid>
       <Grid item xs={12}>
@@ -94,11 +90,7 @@ const RegisterPage = () => {
       </Grid>
       <Grid item xs={12} align="center">
         <FormControl component="fieldset">
-<<<<<<< HEAD
-          <InputLabel id="house-label">Wybierz ród</InputLabel>
-=======
           <InputLabel id="house-label">Wybierz rodzinę</InputLabel>
->>>>>>> 8ecf4cb78e7a980b464223646c0506188ab23d25
           <Select
             labelId="house-label"
             id="house"
@@ -115,20 +107,12 @@ const RegisterPage = () => {
       </Grid>
       <Grid item xs={12}>
         <Button variant="contained" color="primary" onClick={signInClicked}>
-<<<<<<< HEAD
-          Wejdż
-=======
           Zapisz się
->>>>>>> 8ecf4cb78e7a980b464223646c0506188ab23d25
         </Button>
       </Grid>
       <Grid item xs={12}>
         <Button variant="contained" color="primary" to="/" component={Link}>
-<<<<<<< HEAD
-          Jako gość
-=======
           Wejdź jako gość
->>>>>>> 8ecf4cb78e7a980b464223646c0506188ab23d25
         </Button>
       </Grid>
       <Grid item xs={12}>
