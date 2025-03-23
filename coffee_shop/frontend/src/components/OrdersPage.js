@@ -7,21 +7,24 @@ const OrdersPage = () => {
   const [userName, setUserName] = useState("");
 
   useEffect(() => {
-    interval = setInterval(() => {
+    let interval = setInterval(() => {
       fetch("/api/get-guest-orders")
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Błąd pobierania zamówień");
+          }
+          return response.json();
+        })
         .then((data) => {
-          console.log(data);
           setUserName(data.userName);
-          const map = new Map()
-          data.orders.forEach(element => {
-            map.set(element.name, (map.get(element.name) || 0) + 1)
-          })
+          const map = new Map();
+          data.orders.forEach((element) => {
+            map.set(element.name, (map.get(element.name) || 0) + 1);
+          });
           setOrders(map);
-          console.log(map)
-        });
-      }
-    , 1000);
+        })
+        .catch((error) => console.error("Błąd:", error));
+    }, 5000); 
     return () => clearInterval(interval);
   }, []);
 

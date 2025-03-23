@@ -27,7 +27,10 @@ const MenuDiv = () => {
 
   if (loading) {
     return (
-      <Container>
+      <Container align="center">
+        <Typography variant="h4" align="center" gutterBottom>
+          Menu
+        </Typography>
         <CircularProgress />
       </Container>
     );
