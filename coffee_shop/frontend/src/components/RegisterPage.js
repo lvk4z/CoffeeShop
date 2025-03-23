@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
@@ -12,11 +12,15 @@ import {
   FormHelperText,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import { fetchMeeting } from "../redux/features/userSlice"; 
 
 const RegisterPage = () => {
   const defaultValue = "";
   const defaultHouse = "Z";
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const meetingID = useSelector((state) => state.user.meetingID);
 
   const [name, setName] = useState(defaultValue);
   const [error, setError] = useState(defaultValue);
@@ -25,6 +29,10 @@ const RegisterPage = () => {
   const handleTextFieldChange = (event) => {
     setName(event.target.value);
   };
+
+  useEffect(() => {
+      dispatch(fetchMeeting());
+    },[dispatch]);
 
   const signInClicked = () => {
     const requestOptions = {
@@ -42,7 +50,7 @@ const RegisterPage = () => {
           const data = JSON.parse(text);
           console.log(data);
           if (response.ok) {
-            navigate("/", { replace: true });
+            navigate(`/meeting/${meetingID}`, { replace: true });
             window.location.reload();
           } else {
             setError(data.error || "Registration failed");
@@ -66,7 +74,7 @@ const RegisterPage = () => {
     <Grid container spacing={2} align="center">
       <Grid item xs={12}>
         <Typography variant="h4" component="h4">
-          Register here
+          Zarejestruj się
         </Typography>
       </Grid>
       <Grid item xs={12}>
@@ -82,7 +90,7 @@ const RegisterPage = () => {
       </Grid>
       <Grid item xs={12} align="center">
         <FormControl component="fieldset">
-          <InputLabel id="house-label">Choose your house</InputLabel>
+          <InputLabel id="house-label">Wybierz ród</InputLabel>
           <Select
             labelId="house-label"
             id="house"
@@ -99,17 +107,17 @@ const RegisterPage = () => {
       </Grid>
       <Grid item xs={12}>
         <Button variant="contained" color="primary" onClick={signInClicked}>
-          Sign in
+          Wejdż
         </Button>
       </Grid>
       <Grid item xs={12}>
         <Button variant="contained" color="primary" to="/" component={Link}>
-          As a guest
+          Jako gość
         </Button>
       </Grid>
       <Grid item xs={12}>
         <Button variant="contained" color="secondary" to="/" component={Link}>
-          Back
+          Cofnij
         </Button>
       </Grid>
     </Grid>

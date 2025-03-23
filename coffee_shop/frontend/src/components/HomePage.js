@@ -45,14 +45,13 @@ const HomePage = () => {
         <Grid container spacing={2}>
           <Grid item size={12}>
             <Typography variant="h3" align="center">
-              Welcome to
-              Coffee shop {meetingID}
+              Witaj w aplikacji do zamawania kawy!
             </Typography>
           </Grid>
           <Grid item size={12} align="center">
             <ButtonGroup disableElevation variant="contained" color="primary">
               <Button color="primary" to="/register" component={Link}>
-                Enter 
+                Wejdź
               </Button>
             </ButtonGroup>
           </Grid>
