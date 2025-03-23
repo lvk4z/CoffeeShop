@@ -52,7 +52,7 @@ const OrdersPage = () => {
       .catch((error) => console.error("Błąd pobierania zamówień:", error));
   };
 
-  useInterval(fetchOrders, 1000); 
+  useInterval(fetchOrders, 6000); 
 
   return (
     <div>
