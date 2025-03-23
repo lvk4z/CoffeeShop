@@ -67,16 +67,20 @@ class RegisterAsMember(APIView):
     serializer_class = GuestSerializer
 
     def post(self, request, format=None):
-        if not self.request.session.exists(self.request.session.session_key):
-            self.request.session.create()
+        if not request.session.exists(request.session.session_key):
+            request.session.create()
 
         serializer = self.serializer_class(data=request.data)
-        if  serializer.is_valid():
-            coname = serializer.data.get('coname')
-            house = serializer.data.get('house')
-            guest = Guest.objects.get_or_create(coname=coname, house=house)
-            self.request.session['coname'] = coname
+        if serializer.is_valid():
+            coname = serializer.validated_data.get('coname')
+            house = serializer.validated_data.get('house')
+
+            guest, created = Guest.objects.get_or_create(coname=coname, house=house)
+
+            request.session['coname'] = guest.coname
+
             return JsonResponse({'coname': guest.coname, 'house': guest.house}, status=status.HTTP_200_OK)
+
         return JsonResponse({'error': 'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
 
 class CreateMeetingView(APIView):
@@ -99,7 +103,6 @@ class CreateMeetingView(APIView):
             )
 
             if not created:
-                # Jeśli spotkanie już istnieje, zmieniamy tylko menu
                 meeting.menu = menu
                 meeting.save(update_fields=['menu'])
 

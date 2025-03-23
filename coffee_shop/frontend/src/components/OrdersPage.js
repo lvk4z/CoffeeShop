@@ -7,18 +7,22 @@ const OrdersPage = () => {
   const [userName, setUserName] = useState("");
 
   useEffect(() => {
-    fetch("/api/get-guest-orders")
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        setUserName(data.userName);
-        const map = new Map()
-        data.orders.forEach(element => {
-          map.set(element.name, (map.get(element.name) || 0) + 1)
-        })
-        setOrders(map);
-        console.log(map)
-      });
+    interval = setInterval(() => {
+      fetch("/api/get-guest-orders")
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          setUserName(data.userName);
+          const map = new Map()
+          data.orders.forEach(element => {
+            map.set(element.name, (map.get(element.name) || 0) + 1)
+          })
+          setOrders(map);
+          console.log(map)
+        });
+      }
+    , 1000);
+    return () => clearInterval(interval);
   }, []);
 
 
