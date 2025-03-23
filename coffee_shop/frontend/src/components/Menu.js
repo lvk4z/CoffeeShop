@@ -36,7 +36,7 @@ const MenuDiv = () => {
   return (
     <Container>
       <Typography variant="h4" align="center" gutterBottom>
-        Menu
+        Menu  
       </Typography>
       <Grid container spacing={5}>
         {drinks.map((drink) => (

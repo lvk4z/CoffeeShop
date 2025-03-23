@@ -33,7 +33,7 @@ class Meeting(models.Model):
         (KRAKOWSCY, "W domu nr 136a")
     ]
     host = models.CharField(max_length=1, choices=HOST_CHOICES)
-    menu = models.OneToOneField(Menu, on_delete=models.CASCADE, null=True, blank=True)
+    menu = models.ForeignKey(Menu, on_delete=models.CASCADE, null=True, blank=True)
 
 class Guest(models.Model):
     MICZEK = "M"

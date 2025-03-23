@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
 
-class MeetingView(generics.CreateAPIView):
+class MeetingView(generics.ListAPIView):
     queryset = Meeting.objects.all()
     serializer_class = MeetingSerializer
 
@@ -22,7 +22,7 @@ class OrdersView(generics.CreateAPIView):
     queryset = Orders.objects.all()
     serializer_class = OrdersSerializer
 
-class MenuView(generics.CreateAPIView):
+class MenuView(generics.ListAPIView):
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
 
@@ -74,7 +74,7 @@ class RegisterAsMember(APIView):
         if  serializer.is_valid():
             coname = serializer.data.get('coname')
             house = serializer.data.get('house')
-            guest = Guest.objects.create(coname=coname, house=house)
+            guest = Guest.objects.get_or_create(coname=coname, house=house)
             self.request.session['coname'] = coname
             return JsonResponse({'coname': guest.coname, 'house': guest.house}, status=status.HTTP_200_OK)
         return JsonResponse({'error': 'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
@@ -85,24 +85,27 @@ class CreateMeetingView(APIView):
     def post(self, request, format=None):
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
-        
+
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            event_date = serializer.data.get('event_date')
-            host = serializer.data.get('host')
-            menu_id = serializer.data.get('menu')
-            menu = Menu.objects.all()
-            queryset = Meeting.objects.filter(event_date=event_date)
-            if queryset.exists():
-                meeting = queryset[0]
-                meeting.host = host
-                meeting.menu = menu[0]
-                meeting.save(update_fields=['host','menu'])
-            else:
-                meeting = Meeting(event_date=event_date, host=host, menu=menu[0])
-                meeting.save()
-            
+            event_date = serializer.validated_data.get('event_date')
+            host = serializer.validated_data.get('host')
+
+            menu = Menu.objects.first()
+            print(menu)
+            meeting, created = Meeting.objects.get_or_create(
+                event_date=event_date,
+                defaults={"host": host, "menu": menu}
+            )
+
+            if not created:
+                # Jeśli spotkanie już istnieje, zmieniamy tylko menu
+                meeting.menu = menu
+                meeting.save(update_fields=['menu'])
+
             return Response(MeetingSerializer(meeting).data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserInBase(APIView):
     def get(self, request, format=None):
