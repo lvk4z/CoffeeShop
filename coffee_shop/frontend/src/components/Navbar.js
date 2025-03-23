@@ -12,6 +12,7 @@ import {
   ListItem,
   ListItemText,
   Divider,
+  Link,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ExitToAppOutlinedIcon from "@mui/icons-material/ExitToAppOutlined";
@@ -51,15 +52,17 @@ const Navbar = () => {
     >
       <List>
         <ListItem>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            KAWA
-          </Typography>
+          <Link href="/" color="inherit">
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              KAWA
+            </Typography>
+          </Link>
         </ListItem>
         <Divider />
-        <ListItem button>
+        <ListItem button onClick={() => navigate("/orders")}>
           <ListItemText primary="Zamówienia" />
         </ListItem>
-        <ListItem button>
+        <ListItem button onClick={leaveButtonPressed}>
           <ListItemText
             primary={
               <>
@@ -98,6 +101,7 @@ const Navbar = () => {
             sx={{
               flexGrow: 1,
             }}
+            onClick={() => navigate("/")}
           >
             KAWA
           </Typography>

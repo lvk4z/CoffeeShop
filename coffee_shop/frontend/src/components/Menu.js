@@ -9,12 +9,9 @@ const MenuDiv = () => {
   const dispatch = useDispatch();
   const meetingID = useSelector((state) => state.user.meetingID);
   const [drinks, setDrinks] = useState([]);
-  const loading = useSelector(state => state.user.loading);
+  const loading = useSelector((state) => state.user.loading);
 
-useEffect(() => {
-    dispatch(fetchMeeting());
-  },[dispatch]);
-  
+
   useEffect(() => {
     if (meetingID) {
       fetch("/api/get-menu?id=" + meetingID)
@@ -41,9 +38,9 @@ useEffect(() => {
       <Typography variant="h4" align="center" gutterBottom>
         Menu
       </Typography>
-      <Grid container spacing={8}>
+      <Grid container spacing={5}>
         {drinks.map((drink) => (
-          <Grid item size={{ xs: 12, md: 3 }} key={drink.name}>
+          <Grid item={true} size={{ xs: 12, md: 3 }} key={drink.name}>
             <Drink item={drink} />
           </Grid>
         ))}

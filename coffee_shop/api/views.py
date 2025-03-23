@@ -169,7 +169,7 @@ class CurrentMeetingView(APIView):
         queryset = Meeting.objects.all()
         if queryset.exists():
             meeting = queryset[queryset.count()-1]
-            return Response({'id': meeting.id}, status=status.HTTP_200_OK)
+            return Response({'id': meeting.id, 'host':meeting.host}, status=status.HTTP_200_OK)
         return Response({'Not found' : 'doesnt exist'},status=status.HTTP_404_NOT_FOUND)
 
 class CreateOrderView(APIView):

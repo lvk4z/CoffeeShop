@@ -26,7 +26,7 @@ const CreateMeetingPage = ({
 }) => {
   const navigate = useNavigate();
 
-  const [date, setDate] = useState(getNextSunday());
+  const [date, setDate] = useState(getNextSunday(true));
   const [status, setStatus] = useState(pStatus);
   const [host, setHost] = useState(pHost ? pHost : getHost());
   const [menu, setMenu] = useState(1)
