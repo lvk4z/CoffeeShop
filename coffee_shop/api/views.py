@@ -22,7 +22,7 @@ class OrdersView(generics.CreateAPIView):
     queryset = Orders.objects.all()
     serializer_class = OrdersSerializer
 
-class MenuView(generics.ListAPIView):
+class MenuView(generics.CreateAPIView):
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
 

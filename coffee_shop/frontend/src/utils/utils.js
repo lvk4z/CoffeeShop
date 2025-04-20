@@ -1,10 +1,15 @@
 const getNextSunday = (formatted) => {
     const today = new Date();
     const dayOfWeek = today.getDay();
-    const daysUntilSunday = 7 - dayOfWeek;
+    const daysUntilSunday = dayOfWeek;
     const nextSunday = new Date(today);
     nextSunday.setDate(today.getDate() + daysUntilSunday);
-    if(formatted){
+
+    // Adjust to Warsaw time zone (UTC+1 or UTC+2 depending on DST)
+    const warsawOffset = new Date().getTimezoneOffset() + 60; // Warsaw is UTC+1 standard
+    nextSunday.setMinutes(nextSunday.getMinutes() - warsawOffset);
+
+    if (formatted) {
         nextSunday.setHours(12, 0, 0, 0);
         return nextSunday.toISOString().split(".")[0];
     }
