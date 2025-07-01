@@ -1,11 +1,10 @@
 # Byte-compiled / optimized / DLL files
-coffee_shop/api/__pycache__/
+/api/__pycache__/
 *.py[cod]
 *$py.class
-
 # C extensions
 *.so
-
+coffee_shop\api\__pycache__
 # Distribution / packaging
 .Python
 build/

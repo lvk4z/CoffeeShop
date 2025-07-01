@@ -1,7 +1,14 @@
 from django.urls import path
 from .views import MeetingView, GuestView, DrinkView, OrdersView, MenuView, GetMeeting, GetMenu, CreateMeetingView, RegisterAsMember, UserInBase, LeaveMeeting, UpdateMeeting, CurrentMeetingView, CreateOrderView, GetGuestOrdersView
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 
 urlpatterns = [
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('meeting', MeetingView.as_view()),
     path('guest', GuestView.as_view()),
     path('drink', DrinkView.as_view()),
