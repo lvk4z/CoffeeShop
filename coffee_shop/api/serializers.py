@@ -16,10 +16,21 @@ class UpdateMeetingSerializer(serializers.ModelSerializer):
         model = Meeting
         fields = ('id','event_date', 'host')
 
-class GuestSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Guest
-        fields = ('coname', 'house')
+class GuestSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=150)
+    house = serializers.ChoiceField(choices=Guest.HOUSES, required=False)
+    phone = serializers.CharField(required=False, allow_blank=True)
+
+    def create_or_get_guest(self, validated_data):
+        username = validated_data['username']
+        guest, created = Guest.objects.get_or_create(username=username)
+        if created:
+            guest.house = validated_data.get('house', 'H')
+            guest.phone = validated_data.get('phone', '')
+            guest.set_unusable_password()
+            guest.save()
+        return guest
+
 class DrinkSerializer(serializers.ModelSerializer):
     class Meta:
         model = Drink

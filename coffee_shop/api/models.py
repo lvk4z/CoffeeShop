@@ -1,8 +1,9 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 class Drink(models.Model):
     name = models.CharField(max_length=25)
-    description = models.CharField(max_length=200, default=" ")
+    description = models.CharField(max_length=200, blank=True, default=" ")
     image = models.ImageField(upload_to='Drink_images/', blank=True, null=True)
 
     def __str__(self):
@@ -35,7 +36,7 @@ class Meeting(models.Model):
     host = models.CharField(max_length=1, choices=HOST_CHOICES)
     menu = models.ForeignKey(Menu, on_delete=models.CASCADE, null=True, blank=True)
 
-class Guest(models.Model):
+class Guest(AbstractUser):
     MICZEK = "M"
     ZEGAR = "Z"
     STASZEK = "S"
@@ -48,12 +49,14 @@ class Guest(models.Model):
         (KRAKOWSKI, "House of Krakowski"),
         (HOUSELESS, "Houseless")
     ]
-    coname = models.CharField(max_length=20)
     house = models.CharField(max_length=1, choices=HOUSES, default=HOUSELESS)
+    phone = models.CharField(max_length=15, blank=True, null=True)
 
     def __str__(self) -> str:
-        return self.coname
+        return self.username
 
+    def set_unusable_password(self):
+        super().set_unusable_password()
 
 class Orders(models.Model):
     meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)

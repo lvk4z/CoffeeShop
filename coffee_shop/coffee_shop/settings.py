@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'corsheaders'
 ]
 
+AUTH_USER_MODEL = 'api.Guest'
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -90,7 +92,7 @@ WSGI_APPLICATION = 'coffee_shop.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(default="postgresql://coffeedb_i0hc_user:1UomSU4hFwK8kSyJn7ipcRSxIyRBvF5f@dpg-d028psmuk2gs73e7i9gg-a.frankfurt-postgres.render.com/coffeedb_i0hc")
+    'default': dj_database_url.config(default="postgresql://coffeedb_hxhe_user:RFq3WyNkSEPX23nGjXpKRxOVFY1G9dFK@dpg-d1ipevvdiees73as787g-a.frankfurt-postgres.render.com/coffeedb_hxhe")
 }
 
 
@@ -118,7 +120,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Warsaw'
 
 USE_I18N = True
 
