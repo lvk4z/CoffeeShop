@@ -8,29 +8,20 @@ export const fetchMeeting = createAsyncThunk(
         console.log(response.data);
         return response.data;
     }
-
 )
 
 const initialState = {
     meetingID: null,
-    coffeeName: "",
-    host:"",
     loading: false,
     error: null,
 };
 
-export const userSlice = createSlice({
-    name: "user",
+export const meetingSlice = createSlice({
+    name: "meeting",
     initialState,
     reducers: {
         setMeetingID: (state, action) => {
             state.meetingID = action.payload;
-        },
-        setCoffeeName: (state, action) => {
-            state.coffeeName = action.payload;
-        },
-        setHouse: (state, action) => {
-            state.host = action.payload
         }
     },
     extraReducers: (builder) => {
@@ -49,7 +40,7 @@ export const userSlice = createSlice({
     },
 });
 
-export const {setMeetingID, setCoffeeName, setHouse} = userSlice.actions;
+export const {setMeetingID } = meetingSlice.actions;
 
-export default userSlice.reducer;
+export default meetingSlice.reducer;
 

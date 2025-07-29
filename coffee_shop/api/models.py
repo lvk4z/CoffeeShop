@@ -50,13 +50,6 @@ class Guest(AbstractUser):
         (HOUSELESS, "Houseless")
     ]
     house = models.CharField(max_length=1, choices=HOUSES, default=HOUSELESS)
-    phone = models.CharField(max_length=15, blank=True, null=True)
-
-    def __str__(self) -> str:
-        return self.username
-
-    def set_unusable_password(self):
-        super().set_unusable_password()
 
 class Orders(models.Model):
     meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)

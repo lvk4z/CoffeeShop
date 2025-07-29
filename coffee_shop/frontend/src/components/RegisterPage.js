@@ -12,107 +12,132 @@ import {
   FormHelperText,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
-import { fetchMeeting } from "../redux/features/userSlice"; 
+import { useDispatch, useSelector } from "react-redux";
+import { fetchMeeting } from "../redux/features/meetingSlice"; 
+import { authenticateUser, clearError } from "../redux/features/authSlice";
 
 const RegisterPage = () => {
   const defaultValue = "";
   const defaultHouse = "Z";
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const meetingID = useSelector((state) => state.user.meetingID);
+  
+  const meetingID = useSelector((state) => state.meeting.meetingID);
+  const { isAuthenticated, loading, error } = useSelector((state) => state.auth);
 
   const [name, setName] = useState(defaultValue);
-  const [error, setError] = useState(defaultValue);
   const [house, setHouse] = useState(defaultHouse);
+  const [localError, setLocalError] = useState(defaultValue);
+
+  useEffect(() => {
+    dispatch(fetchMeeting());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const savedUsername = localStorage.getItem("username");
+    if (savedUsername) {
+      setName(savedUsername);
+    }
+  }, []);
+
+  useEffect(() => {
+    dispatch(clearError());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (isAuthenticated && meetingID) {
+      navigate(`/meeting/${meetingID}`, { replace: true });
+    }
+  }, [isAuthenticated, meetingID, navigate]);
 
   const handleTextFieldChange = (event) => {
     setName(event.target.value);
-  };
-
-  useEffect(() => {
-      dispatch(fetchMeeting());
-    },[dispatch]);
-
-  const signInClicked = () => {
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        coname: name,
-        house: house,
-      }),
-    };
-    fetch("/api/register-as-member", requestOptions)
-      .then(async (response) => {
-        const text = await response.text();
-        try {
-          const data = JSON.parse(text);
-          console.log(data);
-          if (response.ok) {
-            navigate(`/meeting/${meetingID}`, { replace: true });
-            window.location.reload();
-          } else {
-            setError(data.error || "Registration failed");
-          }
-        } catch (err) {
-          console.error("Failed to parse response as JSON:", text);
-          setError("Registration failed: Invalid server response");
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-        setError("Registration failed: Network error");
-      });
+    setLocalError(""); 
+    if (error) {
+      dispatch(clearError());
+    }
   };
 
   const handleHouseChange = (event) => {
     setHouse(event.target.value);
   };
 
+  const handleAuthenticateUser = async () => {
+    if (!name.trim()) {
+      setLocalError("Wpisz swoje imię");
+      return;
+    }
+
+    try {
+      setLocalError("");
+      
+      // Wywołaj akcję autentykacji
+      const result = await dispatch(authenticateUser({ 
+        username: name.trim(), 
+        coffee_group: house 
+      })).unwrap();
+      
+      // Jeśli sukces, przekieruj (useEffect wykona redirect)
+      console.log("Authentication successful:", result);
+      console.log(isAuthenticated);
+      if (isAuthenticated) {
+        navigate(`/meeting/${meetingID}`, { replace: true });
+      }
+    } catch (error) {
+      console.error("Authentication error:", error);
+      setLocalError(error || "Błąd podczas logowania. Spróbuj ponownie.");
+    }
+  };
+
+  const displayError = localError || error || "";
+
   return (
     <Grid container spacing={2} align="center">
       <Grid item xs={12}>
         <Typography variant="h4" component="h4">
-          Zapisz się tutaj
+          Wejdź do aplikacji
         </Typography>
       </Grid>
       <Grid item xs={12}>
         <TextField
-          error={Boolean(error)}
-          label="Enter name"
-          placeholder="name"
+          error={Boolean(displayError)}
+          label="Wpisz swoje imię"
+          placeholder="Imię"
           value={name}
-          helperText={error}
+          helperText={displayError}
           variant="outlined"
           onChange={handleTextFieldChange}
+          disabled={loading}
+          fullWidth
+          style={{ maxWidth: 300 }}
         />
       </Grid>
       <Grid item xs={12} align="center">
-        <FormControl component="fieldset">
+        <FormControl component="fieldset" style={{ minWidth: 200 }}>
           <InputLabel id="house-label">Wybierz rodzinę</InputLabel>
           <Select
             labelId="house-label"
             id="house"
             value={house}
             onChange={handleHouseChange}
+            disabled={loading}
           >
             <MenuItem value="M">Miczkowie</MenuItem>
             <MenuItem value="Z">Zegarowie</MenuItem>
             <MenuItem value="S">Staszkowie</MenuItem>
             <MenuItem value="K">Krakowscy</MenuItem>
           </Select>
-          <FormHelperText>{error}</FormHelperText>
+          {displayError && <FormHelperText error>{displayError}</FormHelperText>}
         </FormControl>
       </Grid>
       <Grid item xs={12}>
-        <Button variant="contained" color="primary" onClick={signInClicked}>
-          Zapisz się
-        </Button>
-      </Grid>
-      <Grid item xs={12}>
-        <Button variant="contained" color="primary" to="/" component={Link}>
-          Wejdź jako gość
+        <Button 
+          variant="contained" 
+          color="primary" 
+          onClick={handleAuthenticateUser}
+          disabled={loading}
+        >
+          {loading ? "Logowanie..." : "Wejdź"}
         </Button>
       </Grid>
       <Grid item xs={12}>

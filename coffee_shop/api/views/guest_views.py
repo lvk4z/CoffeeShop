@@ -11,12 +11,17 @@ class AutoAuthView(APIView):
     def post(self, request):
         serializer = GuestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        guest = serializer.create_or_get_guest(serializer.validated_data)
+        username = serializer.validated_data.get('username')
+        house = serializer.validated_data.get('house', 'H')
+
+        guest, created  = Guest.objects.get_or_create(username=username, defaults={'house': house})
         refresh = RefreshToken.for_user(guest)
         return JsonResponse({
             'access': str(refresh.access_token),
-            'refresh': str(refresh.refresh_token),
-            'username': guest.username
+            'refresh': str(refresh),
+            'username': guest.username,
+            'house': guest.house,
+            'created': created
         })
 
 class RegisterAsMember(APIView):
@@ -35,7 +40,10 @@ class RegisterAsMember(APIView):
 
             request.session['username'] = guest.username
 
-            return JsonResponse({'username': guest.username, 'house': guest.house}, status=status.HTTP_200_OK)
+            return JsonResponse(
+                {'username': guest.username, 
+                'house': guest.house,
+                'created': created}, status=status.HTTP_200_OK)
 
         return JsonResponse({'error': 'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -43,7 +51,7 @@ class UserInBase(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
-        username =  request.user.username
+        username = request.user.username
         try:
             guest = Guest.objects.get(username=username)
         except Guest.DoesNotExist:

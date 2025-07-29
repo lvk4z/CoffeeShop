@@ -15,6 +15,7 @@ import {
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { getHost, getNextSunday} from "../utils/utils"
+import axios from "axios";
 
 const CreateMeetingPage = ({
   pUpdate = false,
@@ -40,20 +41,18 @@ const CreateMeetingPage = ({
   }, [pDate, pStatus, pHost, pUpdate, pUpdateCallback]);
 
   const handleCreateClicked = () => {
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        event_date: date,
-        host: host,
-        status: status,
-        menu: 3,
-      }),
-    };
-    console.log(requestOptions);
-    fetch("api/create-meeting", requestOptions)
-      .then((response) => response.json())
-      .then((data) => navigate("/meeting/" + data.id));
+    axios.post("api/create-meeting/", {
+      event_date: date,
+      host: host,
+      status: status,
+      menu: 0,
+    })
+    .then((response) => {
+      navigate("/meeting/" + response.data.id);
+    })
+    .catch((error) => {
+      setErrorMsg("Failed to create meeting");
+    });
   };
 
   const handleUpdateClicked = () => {
@@ -67,7 +66,7 @@ const CreateMeetingPage = ({
         id: 5,
       }),
     };
-    fetch("http://127.0.0.1:8000/api/update-meeting", requestOptions).then(
+    fetch("http://127.0.0.1:8000/api/update-meeting/", requestOptions).then(
       (response) => {
         if (response.ok) {
           setSuccesMsg("Meeting updated succesfully!");

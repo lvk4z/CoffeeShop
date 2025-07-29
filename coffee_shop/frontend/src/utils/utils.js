@@ -1,7 +1,7 @@
 const getNextSunday = (formatted) => {
     const today = new Date();
     const dayOfWeek = today.getDay();
-    const daysUntilSunday = dayOfWeek;
+    const daysUntilSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;;
     const nextSunday = new Date(today);
     nextSunday.setDate(today.getDate() + daysUntilSunday);
 

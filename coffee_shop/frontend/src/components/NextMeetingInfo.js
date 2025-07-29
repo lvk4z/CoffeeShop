@@ -7,8 +7,8 @@ const formatTime = (value) => value.toString().padStart(2, "0");
 const NextMeetingInfo = ({ target }) => {
   const [timeLeft, setTimeLeft] = useState("");
   const dispatch = useDispatch();
-  const host = getFullHostName(useSelector((state) => state.user.host));
-  
+  const host = "Zegarów nr 17"; //getFullHostName(useSelector((state) => state.user.host));
+
   useEffect(() => {
     const targetDate = getNextSunday(false);
 

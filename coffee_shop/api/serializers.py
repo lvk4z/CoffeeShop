@@ -16,20 +16,21 @@ class UpdateMeetingSerializer(serializers.ModelSerializer):
         model = Meeting
         fields = ('id','event_date', 'host')
 
-class GuestSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=150)
-    house = serializers.ChoiceField(choices=Guest.HOUSES, required=False)
-    phone = serializers.CharField(required=False, allow_blank=True)
-
-    def create_or_get_guest(self, validated_data):
-        username = validated_data['username']
-        guest, created = Guest.objects.get_or_create(username=username)
-        if created:
-            guest.house = validated_data.get('house', 'H')
-            guest.phone = validated_data.get('phone', '')
-            guest.set_unusable_password()
-            guest.save()
-        return guest
+class GuestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Guest
+        fields = ('username', 'house')
+    
+    def validate_username(self, value):
+        if not value or not value.strip():
+            raise serializers.ValidationError("Username cannot be empty")
+        return value.strip()
+    
+    def validate_house(self, value):
+        valid_houses = ['M', 'Z', 'S', 'K']  
+        if value not in valid_houses:
+            raise serializers.ValidationError(f"House must be one of: {valid_houses}")
+        return value
 
 class DrinkSerializer(serializers.ModelSerializer):
     class Meta:

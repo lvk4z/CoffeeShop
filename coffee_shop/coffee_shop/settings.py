@@ -92,7 +92,7 @@ WSGI_APPLICATION = 'coffee_shop.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(default="postgresql://coffeedb_hxhe_user:RFq3WyNkSEPX23nGjXpKRxOVFY1G9dFK@dpg-d1ipevvdiees73as787g-a.frankfurt-postgres.render.com/coffeedb_hxhe")
+    'default': dj_database_url.config(default="postgresql://coffeedb_4tn5_user:BGL8d5WUSxNSgtZSvJRgmgy4jPNfVMhl@dpg-d23uihngi27c738f1nn0-a.frankfurt-postgres.render.com/coffeedb_4tn5")
 }
 
 

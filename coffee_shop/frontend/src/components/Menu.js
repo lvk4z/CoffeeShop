@@ -2,11 +2,9 @@ import Drink from "./Drink";
 import React, { useState, useEffect } from "react";
 import { Typography, Container, CircularProgress } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchMeeting } from "../redux/features/userSlice";
+import { useSelector } from "react-redux";
 
-const MenuDiv = () => {
-  const dispatch = useDispatch();
+function MenuDiv() {
   const meetingID = useSelector((state) => state.user.meetingID);
   const [drinks, setDrinks] = useState([]);
   const loading = useSelector((state) => state.user.loading);

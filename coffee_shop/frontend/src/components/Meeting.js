@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid2";
 import Button from "@mui/material/Button";
-import { useNavigate } from "react-router-dom";
 import CreateMeetingPage from "./CreateMeetingPage";
 import Menu from "./Menu";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchMeeting } from "../redux/features/userSlice";
+import { fetchMeeting } from "../redux/features/meetingSlice";
 
 const Meeting = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const meetingID = useSelector((state) => state.user.meetingID);
   const [meetingDetails, setMeetingDetails] = useState({
     date: "01-01-2001",
