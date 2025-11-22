@@ -58,3 +58,4 @@ env/
 *.pylintrc
 
 node_modules/
+coffee_shop/api/migrations/

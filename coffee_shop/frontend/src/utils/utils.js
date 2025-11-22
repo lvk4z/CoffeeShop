@@ -33,13 +33,13 @@ const getHost = () => {
 const getFullHostName = (initial) => {
     switch(initial){
         case "Z":
-            return "Zegarów nr 17";
+            return "Z 17";
         case "S":
-            return "Zegarów nr 17a"; 
+            return "ZS 17a"; 
         case "M":
-            return "Miczków";
+            return "M";
         case "K":
-            return "Krakowskich";   
+            return "K";   
     }
 }
 

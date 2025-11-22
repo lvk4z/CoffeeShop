@@ -43,10 +43,10 @@ class Guest(AbstractUser):
     KRAKOWSKI = "K"
     HOUSELESS = "H"
     HOUSES = [
-        (MICZEK, "House of Miczek"),
-        (ZEGAR, "Hosuse of Zegar Tadeusz"),
-        (STASZEK, "House of Zegar Stanisław"),
-        (KRAKOWSKI, "House of Krakowski"),
+        (MICZEK, "House of M"),
+        (ZEGAR, "Hosuse of ZT"),
+        (STASZEK, "House of ZS"),
+        (KRAKOWSKI, "House of K"),
         (HOUSELESS, "Houseless")
     ]
     house = models.CharField(max_length=1, choices=HOUSES, default=HOUSELESS)
