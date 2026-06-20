@@ -1,21 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import Alert from "@material-ui/lab/Alert";
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import {
   Button,
-  Grid,
   Typography,
   TextField,
-  FormHelperText,
   FormControl,
   Select,
   MenuItem,
   InputLabel,
-  Collapse,
-} from "@material-ui/core";
-import { Link } from "react-router-dom";
-import { getHost, getNextSunday} from "../utils/utils"
-import axios from "axios";
+  Box,
+  Alert,
+  Paper,
+} from "@mui/material";
+import { getHost, getNextSunday } from "../utils/utils";
+import axiosInstance from "../utils/axiosInstance";
 
 const CreateMeetingPage = ({
   pUpdate = false,
@@ -27,156 +25,115 @@ const CreateMeetingPage = ({
 }) => {
   const navigate = useNavigate();
 
-  const [date, setDate] = useState(getNextSunday(true));
-  const [status, setStatus] = useState(pStatus);
-  const [host, setHost] = useState(pHost ? pHost : getHost());
-  const [menu, setMenu] = useState(1)
-  const [errorMsg, setErrorMsg] = useState(" ");
-  const [succesMsg, setSuccesMsg] = useState(" ");
+  const [date, setDate] = useState(pDate || getNextSunday(true));
+  const [status, setStatus] = useState(pStatus || "PL");
+  const [host, setHost] = useState(pHost || getHost());
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
 
-  useEffect(() => {
-    if (pUpdate && pUpdateCallback) {
-      pUpdateCallback({ date, status, host });
-    }
-  }, [pDate, pStatus, pHost, pUpdate, pUpdateCallback]);
-
-  const handleCreateClicked = () => {
-    axios.post("api/create-meeting/", {
-      event_date: date,
-      host: host,
-      status: status,
-      menu: 0,
-    })
-    .then((response) => {
-      navigate("/meeting/" + response.data.id);
-    })
-    .catch((error) => {
-      setErrorMsg("Failed to create meeting");
-    });
+  const handleCreate = () => {
+    axiosInstance
+      .post("/create-meeting/", { event_date: date, host, status })
+      .then((res) => navigate("/meeting/" + res.data.id))
+      .catch(() => setErrorMsg("Nie udało się utworzyć spotkania"));
   };
 
-  const handleUpdateClicked = () => {
-    const requestOptions = {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        event_date: date,
-        host: host,
-        menu: 3,
-        id: 5,
-      }),
-    };
-    fetch("http://127.0.0.1:8000/api/update-meeting/", requestOptions).then(
-      (response) => {
-        if (response.ok) {
-          setSuccesMsg("Meeting updated succesfully!");
-        } else {
-          setErrorMsg("Update failed");
-        }
-      }
-    );
-    pUpdateCallback();
-  };
-
-  const handleDateChange = (event) => {
-    setDate(event.target.value);
-  };
-
-  const handleHostChange = (event) => {
-    setHost(event.target.value);
-  };
-
-  const title = pUpdate ? "Update Meeting" : "Create a meeting";
-
-  const renderCreateButtons = () => {
-    return (
-      <Grid container spacing={1}>
-        <Grid item xs={12} align="center">
-          <Button
-            color="primary"
-            variant="contained"
-            onClick={handleCreateClicked}
-          >
-            Create
-          </Button>
-        </Grid>
-        <Grid item xs={12} align="center">
-          <Button color="secondary" variant="contained" to="/" component={Link}>
-            Back
-          </Button>
-        </Grid>
-      </Grid>
-    );
-  };
-
-  const renderUpdateButtons = () => {
-    return (
-      <Grid item xs={12} align="center">
-        <Button
-          color="primary"
-          variant="contained"
-          onClick={handleUpdateClicked}
-        >
-          Update
-        </Button>
-      </Grid>
-    );
+  const handleUpdate = () => {
+    axiosInstance
+      .patch("/update-meeting/", { event_date: date, host, id: pID })
+      .then(() => {
+        setSuccessMsg("Spotkanie zaktualizowane!");
+        if (pUpdateCallback) pUpdateCallback();
+      })
+      .catch(() => setErrorMsg("Aktualizacja nie powiodła się"));
   };
 
   return (
-    <Grid container spacing={2} alignItems="center">
-      <Grid item xs={12}>
-        <Collapse in={errorMsg != " " || succesMsg != " "}>
-          {succesMsg != " " ? (
-            <Alert severity="success" onClose={() => setSuccesMsg(" ")}>
-              {succesMsg};
-            </Alert>
-          ) : (
-            <Alert severity="error" onClose={() => setErrorMsg(" ")}>
-              {errorMsg};
-            </Alert>
-          )}
-          ;
-        </Collapse>
-      </Grid>
-      <Grid item xs={12}>
-        <Typography component="h4" variant="h4" align="center">
-          {title}
-        </Typography>
-      </Grid>
-      <Grid item xs={12} align="center">
-        <FormControl component="fieldset">
-          <FormHelperText>Choose a date for the meeting</FormHelperText>
-          <TextField
-            id="date"
-            type="datetime-local"
-            defaultValue={date}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            onChange={handleDateChange}
-          />
-        </FormControl>
-      </Grid>
-      <Grid item xs={12} align="center">
-        <FormControl component="fieldset">
-          <InputLabel id="host-label">Host</InputLabel>
+    <Paper
+      elevation={0}
+      sx={{
+        border: "1px solid",
+        borderColor: "divider",
+        borderRadius: 3,
+        p: { xs: 3, sm: 4 },
+        maxWidth: 480,
+        mx: "auto",
+      }}
+    >
+      <Typography variant="h5" fontWeight={700} mb={3} align="center">
+        {pUpdate ? "Edytuj spotkanie" : "Utwórz spotkanie"}
+      </Typography>
+
+      {errorMsg && (
+        <Alert severity="error" onClose={() => setErrorMsg("")} sx={{ mb: 2 }}>
+          {errorMsg}
+        </Alert>
+      )}
+      {successMsg && (
+        <Alert severity="success" onClose={() => setSuccessMsg("")} sx={{ mb: 2 }}>
+          {successMsg}
+        </Alert>
+      )}
+
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+        <TextField
+          label="Data i godzina"
+          type="datetime-local"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          InputLabelProps={{ shrink: true }}
+          fullWidth
+        />
+
+        <FormControl fullWidth>
+          <InputLabel id="host-label">Gospodarz</InputLabel>
           <Select
             labelId="host-label"
-            id="host"
             value={host}
-            onChange={handleHostChange}
+            label="Gospodarz"
+            onChange={(e) => setHost(e.target.value)}
           >
-            <MenuItem value="M">Miczkowie</MenuItem>
-            <MenuItem value="Z">Zegarowie</MenuItem>
-            <MenuItem value="S">Staszkowie</MenuItem>
-            <MenuItem value="K">Krakowscy</MenuItem>
+            <MenuItem value="M">Miczki – nr 17f</MenuItem>
+            <MenuItem value="Z">Zegarowie – nr 17</MenuItem>
+            <MenuItem value="S">Staszkowie – nr 17a</MenuItem>
+            <MenuItem value="K">Krakowscy – nr 136a</MenuItem>
           </Select>
         </FormControl>
-      </Grid>
-      {pUpdate ? renderUpdateButtons() : renderCreateButtons()}
-    </Grid>
+
+        {pUpdate && (
+          <FormControl fullWidth>
+            <InputLabel id="status-label">Status</InputLabel>
+            <Select
+              labelId="status-label"
+              value={status}
+              label="Status"
+              onChange={(e) => setStatus(e.target.value)}
+            >
+              <MenuItem value="PL">Zaplanowane</MenuItem>
+              <MenuItem value="PO">Przełożone</MenuItem>
+              <MenuItem value="TP">Odbyło się</MenuItem>
+            </Select>
+          </FormControl>
+        )}
+
+        {pUpdate ? (
+          <Button variant="contained" color="primary" onClick={handleUpdate} fullWidth sx={{ py: 1.3 }}>
+            Zapisz zmiany
+          </Button>
+        ) : (
+          <>
+            <Button variant="contained" color="primary" onClick={handleCreate} fullWidth sx={{ py: 1.3 }}>
+              Utwórz spotkanie
+            </Button>
+            <Button variant="text" component={Link} to="/" sx={{ color: "text.secondary" }}>
+              Wróć
+            </Button>
+          </>
+        )}
+      </Box>
+    </Paper>
   );
 };
 
 export default CreateMeetingPage;
+

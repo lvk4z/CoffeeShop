@@ -43,11 +43,11 @@ class Guest(AbstractUser):
     KRAKOWSKI = "K"
     HOUSELESS = "H"
     HOUSES = [
-        (MICZEK, "House of M"),
-        (ZEGAR, "Hosuse of ZT"),
-        (STASZEK, "House of ZS"),
-        (KRAKOWSKI, "House of K"),
-        (HOUSELESS, "Houseless")
+        (MICZEK, "House of Miczek"),
+        (ZEGAR, "Hosuse of Zegar Tadeusz"),
+        (STASZEK, "House of Zegar Stanis\u0142aw"),
+        (KRAKOWSKI, "House of Krakowski"),
+        (HOUSELESS, "Houseless"),
     ]
     house = models.CharField(max_length=1, choices=HOUSES, default=HOUSELESS)
 
@@ -55,3 +55,4 @@ class Orders(models.Model):
     meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
     guest = models.ForeignKey(Guest, on_delete=models.CASCADE)
     drink = models.ForeignKey(Drink, on_delete=models.CASCADE)
+    done = models.BooleanField(default=False)

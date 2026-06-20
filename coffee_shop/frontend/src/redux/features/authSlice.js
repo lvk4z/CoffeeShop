@@ -1,45 +1,42 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Prostsza wersja akcji autentykacji
 export const authenticateUser = createAsyncThunk(
-    'auth/authenticate', 
-    async ({ username, house = 'Z' }) => {
-        const res = await axios.post('/api/auth/', { 
-            username,  
-            house
-        });
-        
-        // Zapisz dane do localStorage
-        localStorage.setItem('username', username);
-        localStorage.setItem('access', res.data.access);
-        localStorage.setItem('refresh', res.data.refresh);
-        
-        return res.data;
+    'auth/authenticate',
+    async ({ username, house = 'Z' }, { rejectWithValue }) => {
+        try {
+            const res = await axios.post('/api/auth/', { username, house });
+            localStorage.setItem('username', res.data.username);
+            localStorage.setItem('access', res.data.access);
+            localStorage.setItem('refresh', res.data.refresh);
+            return res.data;
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.detail || 'Błąd logowania');
+        }
     }
 );
 
-// Prostsza wersja sprawdzania statusu
 export const checkAuthStatus = createAsyncThunk(
     'auth/checkStatus',
-    async () => {
+    async (_, { rejectWithValue }) => {
         const token = localStorage.getItem('access');
-        if (!token) {
-            throw new Error('No token found');
+        if (!token) return rejectWithValue('No token');
+        try {
+            const res = await axios.get('/api/user-in-base/', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            return { access: token, user: res.data };
+        } catch {
+            // Try refreshing
+            const refresh = localStorage.getItem('refresh');
+            if (!refresh) return rejectWithValue('No refresh token');
+            const r = await axios.post('/api/token/refresh/', { refresh });
+            localStorage.setItem('access', r.data.access);
+            const res2 = await axios.get('/api/user-in-base/', {
+                headers: { Authorization: `Bearer ${r.data.access}` },
+            });
+            return { access: r.data.access, user: res2.data };
         }
-        
-        const res = await axios.get('/api/user-in-base/', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        
-        return {
-            access: token,
-            username: res.data.username,
-            house: res.data.house,
-            user: res.data
-        };
     }
 );
 
@@ -59,7 +56,6 @@ const authSlice = createSlice({
             localStorage.removeItem('access');
             localStorage.removeItem('refresh');
             localStorage.removeItem('username');
-            
             state.access = null;
             state.refresh = null;
             state.username = null;
@@ -69,11 +65,13 @@ const authSlice = createSlice({
         },
         clearError: (state) => {
             state.error = null;
-        }
+        },
+        tokenRefreshed: (state, action) => {
+            state.access = action.payload.access;
+        },
     },
     extraReducers: (builder) => {
         builder
-            // authenticateUser cases
             .addCase(authenticateUser.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -83,24 +81,20 @@ const authSlice = createSlice({
                 state.access = action.payload.access;
                 state.refresh = action.payload.refresh;
                 state.username = action.payload.username;
-                state.user = {
-                    username: action.payload.username,
-                    coffee_group: action.payload.house || 'Z'
-                };
+                state.user = { username: action.payload.username, house: action.payload.house };
                 state.isAuthenticated = true;
                 state.error = null;
             })
             .addCase(authenticateUser.rejected, (state, action) => {
                 localStorage.removeItem('access');
                 localStorage.removeItem('refresh');
-                
                 state.loading = false;
                 state.access = null;
                 state.refresh = null;
                 state.username = null;
                 state.user = null;
                 state.isAuthenticated = false;
-                state.error = action.error.message || 'Authentication failed';
+                state.error = action.payload || action.error.message || 'Błąd logowania';
             })
             .addCase(checkAuthStatus.pending, (state) => {
                 state.loading = true;
@@ -108,28 +102,24 @@ const authSlice = createSlice({
             .addCase(checkAuthStatus.fulfilled, (state, action) => {
                 state.loading = false;
                 state.access = action.payload.access;
-                state.username = action.payload.username;
+                state.username = action.payload.user.username;
                 state.user = action.payload.user;
                 state.isAuthenticated = true;
                 state.error = null;
-                console.log("User authenticated:", action.payload.username);
             })
-            .addCase(checkAuthStatus.rejected, (state, action) => {
-                // Wyczyść localStorage przy błędzie
+            .addCase(checkAuthStatus.rejected, (state) => {
                 localStorage.removeItem('access');
                 localStorage.removeItem('refresh');
                 localStorage.removeItem('username');
-
                 state.loading = false;
                 state.access = null;
                 state.refresh = null;
                 state.username = null;
                 state.user = null;
                 state.isAuthenticated = false;
-                state.error = action.error.message || 'Token invalid';
             });
     },
 });
 
-export const { logout, clearError } = authSlice.actions;
+export const { logout, clearError, tokenRefreshed } = authSlice.actions;
 export default authSlice.reducer;

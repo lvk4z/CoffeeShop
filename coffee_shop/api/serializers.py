@@ -20,17 +20,11 @@ class GuestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Guest
         fields = ('username', 'house')
-    
-    def validate_username(self, value):
-        if not value or not value.strip():
-            raise serializers.ValidationError("Username cannot be empty")
-        return value.strip()
-    
-    def validate_house(self, value):
-        valid_houses = ['M', 'Z', 'S', 'K']  
-        if value not in valid_houses:
-            raise serializers.ValidationError(f"House must be one of: {valid_houses}")
-        return value
+        # Remove the auto-generated UniqueValidator so returning users
+        # can call /api/auth/ again — get_or_create handles deduplication.
+        extra_kwargs = {
+            'username': {'validators': []},
+        }
 
 class DrinkSerializer(serializers.ModelSerializer):
     class Meta:
@@ -40,7 +34,7 @@ class DrinkSerializer(serializers.ModelSerializer):
 class OrdersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Orders
-        fields = ('meeting', 'guest', 'drink')
+        fields = ('id', 'meeting', 'guest', 'drink', 'done')
 
 class MenuSerializer(serializers.ModelSerializer):
     class Meta:

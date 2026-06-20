@@ -5,6 +5,29 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
+from django.utils import timezone
+
+
+def get_current_meeting():
+    """
+    Returns the nearest upcoming PLANNED meeting.
+    Auto-marks past PLANNED meetings as TOOKPLACE first.
+    Falls back to the most recent meeting if none are planned.
+    """
+    now = timezone.now()
+    # Auto-update past planned meetings to "took place"
+    Meeting.objects.filter(status=Meeting.PLANNED, event_date__lt=now).update(status=Meeting.TOOKPLACE)
+    # Nearest upcoming planned meeting
+    meeting = (
+        Meeting.objects
+        .filter(status=Meeting.PLANNED, event_date__gte=now)
+        .order_by('event_date')
+        .first()
+    )
+    if not meeting:
+        # Fallback: most recent meeting overall
+        meeting = Meeting.objects.order_by('-event_date').first()
+    return meeting
 
 class GetMeeting(APIView):
     permission_classes = [IsAuthenticated]
@@ -41,11 +64,9 @@ class GetMenu(APIView):
 
 class CreateMeetingView(APIView):
     serializer_class = CreateMeetingSerializer
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
-        if not self.request.session.exists(self.request.session.session_key):
-            self.request.session.create()
-
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             event_date = serializer.validated_data.get('event_date')
@@ -82,7 +103,7 @@ class UpdateMeeting(APIView):
             except Meeting.DoesNotExist:
                 return Response({'msg': 'Meeting not found'}, status=status.HTTP_400_BAD_REQUEST)
 
-            if request.user.username != "admin":
+            if not request.user.is_staff:
                 return Response({'msg': 'You are not allowed to perform this action'}, status=status.HTTP_403_FORBIDDEN)
            
             meeting.event_date = event_date
@@ -95,8 +116,7 @@ class UpdateMeeting(APIView):
 
 class CurrentMeetingView(APIView):
     def get(self, request, format=None):
-        
-        meeting = Meeting.objects.last()
+        meeting = get_current_meeting()
         if meeting:
-            return Response({'id': meeting.id, 'host':meeting.host}, status=status.HTTP_200_OK)
-        return Response({'Not found' : 'doesnt exist'},status=status.HTTP_404_NOT_FOUND)
+            return Response({'id': meeting.id, 'host': meeting.host}, status=status.HTTP_200_OK)
+        return Response({'Not found': 'doesnt exist'}, status=status.HTTP_404_NOT_FOUND)

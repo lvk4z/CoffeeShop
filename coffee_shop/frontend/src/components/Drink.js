@@ -8,72 +8,64 @@ import {
   Typography,
   Modal,
   Box,
-  TextField,
   IconButton,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
-import CloseIcon from "@material-ui/icons/Close";
-import AddIcon from "@material-ui/icons/Add";
-import RemoveIcon from "@material-ui/icons/Remove";
+import CloseIcon from "@mui/icons-material/Close";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import LocalCafeOutlinedIcon from "@mui/icons-material/LocalCafeOutlined";
+import axiosInstance from "../utils/axiosInstance";
 
 const Drink = ({ item }) => {
   const [open, setOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
-
-  const handleOpen = () => {
-    setOpen(true);
-  };
+  const [ordered, setOrdered] = useState(false);
 
   const handleClose = () => {
     setQuantity(1);
+    setOrdered(false);
     setOpen(false);
   };
 
   const handleOrder = () => {
-    console.log(`Ordered ${quantity} of ${item.name}`);
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        drink_name: item.name,
-        quantity: quantity,
-      }),
-    
-  };
-    fetch("/api/create-order", requestOptions)
-      .then((response) => response.json())
-      .then((data) => console.log(data));
-    handleClose();
+    axiosInstance
+      .post("/create-order/", { drink_name: item.name, quantity })
+      .then(() => setOrdered(true))
+      .catch((err) => console.error("Order failed:", err));
   };
 
-   const increaseQuantity = () => {
-     setQuantity((prev) => prev + 1);
-   };
-
-   const decreaseQuantity = () => {
-     if (quantity > 1) {
-       setQuantity((prev) => prev - 1);
-     }
-   };
   return (
     <>
-      <Grid container justifyContent="center">
-        <Card sx={{ width: 500 }}>
-          <CardActionArea onClick={handleOpen}>
-            <CardMedia
-              component="img"
-              height="140"
-              image={item.image}
-              alt={item.name}
-            />
-            <CardContent>
-              <Typography variant="h6" align="center" component="div">
-                {item.name}
+      <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+        <CardActionArea onClick={() => setOpen(true)} sx={{ flexGrow: 1 }}>
+          {item.image ? (
+            <CardMedia component="img" height="160" image={item.image} alt={item.name} />
+          ) : (
+            <Box
+              sx={{
+                height: 160,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "rgba(201,87,42,0.08)",
+              }}
+            >
+              <LocalCafeOutlinedIcon sx={{ fontSize: 56, color: "primary.main", opacity: 0.6 }} />
+            </Box>
+          )}
+          <CardContent>
+            <Typography variant="subtitle1" fontWeight={600} align="center">
+              {item.name}
+            </Typography>
+            {item.description && item.description.trim() && (
+              <Typography variant="caption" color="text.secondary" align="center" display="block">
+                {item.description}
               </Typography>
-            </CardContent>
-          </CardActionArea>
-        </Card>
-      </Grid>
+            )}
+          </CardContent>
+        </CardActionArea>
+      </Card>
+
       <Modal open={open} onClose={handleClose}>
         <Box
           sx={{
@@ -81,62 +73,74 @@ const Drink = ({ item }) => {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 300,
-            height: 300,
-            bgcolor: "background.paper",
-            boxShadow: 24,
+            width: { xs: "90%", sm: 360 },
+            backgroundColor: "background.paper",
+            border: "1px solid",
+            borderColor: "divider",
+            borderRadius: 3,
+            boxShadow: "0 20px 60px rgba(15,14,13,0.2)",
             p: 4,
-            borderRadius: 2,
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
-            gap: 2,
-            justifyContent: "space-around",
+            gap: 2.5,
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              width: "100%",
-              alignItems: "flex-end",
-            }}
-          >
-            <Typography variant="h6" component="h2" gutterBottom>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Typography variant="h6" fontWeight={700}>
               {item.name}
             </Typography>
-            <IconButton onClick={handleClose}>
-              <CloseIcon />
+            <IconButton onClick={handleClose} size="small">
+              <CloseIcon fontSize="small" />
             </IconButton>
           </Box>
-          <Typography variant="body2" color="textSecondary">
-            {item.description}
-          </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "100%",
-              gap: 5,
-            }}
-          >
-            <IconButton onClick={decreaseQuantity}>
-              <RemoveIcon />
-            </IconButton>
-            <Typography variant="h6">{quantity}</Typography>
-            <IconButton onClick={increaseQuantity}>
-              <AddIcon />
-            </IconButton>
-          </Box>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleOrder}
-            fullWidth
-          >
-            Zamów
-          </Button>
+
+          {item.description && item.description.trim() && (
+            <Typography variant="body2" color="text.secondary">
+              {item.description}
+            </Typography>
+          )}
+
+          {ordered ? (
+            <Box sx={{ textAlign: "center", py: 1 }}>
+              <Typography variant="h6" color="success.main" fontWeight={600}>
+                ✓ Zamówiono!
+              </Typography>
+              <Button variant="text" onClick={handleClose} sx={{ mt: 1, color: "text.secondary" }}>
+                Zamknij
+              </Button>
+            </Box>
+          ) : (
+            <>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 3,
+                  py: 0.5,
+                }}
+              >
+                <IconButton
+                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  sx={{ border: "1px solid", borderColor: "divider" }}
+                >
+                  <RemoveIcon fontSize="small" />
+                </IconButton>
+                <Typography variant="h5" fontWeight={600} sx={{ minWidth: 32, textAlign: "center" }}>
+                  {quantity}
+                </Typography>
+                <IconButton
+                  onClick={() => setQuantity((q) => q + 1)}
+                  sx={{ border: "1px solid", borderColor: "divider" }}
+                >
+                  <AddIcon fontSize="small" />
+                </IconButton>
+              </Box>
+              <Button variant="contained" color="primary" onClick={handleOrder} fullWidth sx={{ py: 1.2 }}>
+                Zamów {quantity > 1 ? `(×${quantity})` : ""}
+              </Button>
+            </>
+          )}
         </Box>
       </Modal>
     </>
@@ -144,3 +148,4 @@ const Drink = ({ item }) => {
 };
 
 export default Drink;
+

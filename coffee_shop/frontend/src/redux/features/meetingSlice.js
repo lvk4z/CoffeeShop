@@ -4,7 +4,7 @@ import axios from 'axios';
 export const fetchMeeting = createAsyncThunk(
     "user/fetchMeeting",
     async  () => {
-        const response = await axios.get("/api/current-meeting");
+        const response = await axios.get("/api/current-meeting/");
         console.log(response.data);
         return response.data;
     }

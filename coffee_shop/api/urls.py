@@ -2,7 +2,7 @@ from django.urls import path
 from .views.views import MeetingView, GuestView, DrinkView, OrdersView, MenuView
 from .views.meeting_views import GetMeeting, CreateMeetingView, UpdateMeeting, GetMenu, CurrentMeetingView
 from .views.guest_views import RegisterAsMember, UserInBase, LeaveMeeting, AutoAuthView
-from .views.orders_view import CreateOrderView, GetGuestOrdersView
+from .views.orders_view import CreateOrderView, GetGuestOrdersView, GetMeetingOrdersView, ToggleOrderDoneView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -27,4 +27,6 @@ urlpatterns = [
     path('current-meeting/', CurrentMeetingView.as_view()),
     path('create-order/', CreateOrderView.as_view()),
     path('get-guest-orders/', GetGuestOrdersView.as_view()),
+    path('meeting-orders/', GetMeetingOrdersView.as_view()),
+    path('toggle-order/<int:order_id>/', ToggleOrderDoneView.as_view()),
 ]

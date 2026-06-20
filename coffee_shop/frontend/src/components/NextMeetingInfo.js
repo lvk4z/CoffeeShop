@@ -1,43 +1,40 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getFullHostName, getNextSunday } from "../utils/utils";
+import { useSelector } from "react-redux";
+import { getNextSunday } from "../utils/utils";
 
-const formatTime = (value) => value.toString().padStart(2, "0");
+const pad = (v) => String(v).padStart(2, "0");
 
-const NextMeetingInfo = ({ target }) => {
+const HOST_NAMES = {
+  M: "Miczków",
+  Z: "Zegarów",
+  S: "Staszków",
+  K: "Krakowskich",
+};
+
+const NextMeetingInfo = () => {
   const [timeLeft, setTimeLeft] = useState("");
-  const dispatch = useDispatch();
-  const host = "Zegarów nr 17"; //getFullHostName(useSelector((state) => state.user.host));
+  const meetingID = useSelector((state) => state.meeting.meetingID);
+  // We show a generic countdown to next Sunday — precise host shown in Meeting page
 
   useEffect(() => {
-    const targetDate = getNextSunday(false);
-
-    const updateCountdown = () => {
-      const now = new Date();
-      const diff = targetDate - now;
-
-      if (diff <= 0) {
-        setTimeLeft("Spotkanie już trwa!");
-        return;
-      }
-
-      const days = formatTime(Math.floor(diff / (1000 * 60 * 60 * 24)));
-      const hours = formatTime(Math.floor((diff / (1000 * 60 * 60)) % 24));
-      const minutes = formatTime(Math.floor((diff / (1000 * 60)) % 60));
-      const seconds = formatTime(Math.floor((diff / 1000) % 60));
-
-      setTimeLeft(`${days}:${hours}:${minutes}:${seconds}`);
+    const target = getNextSunday(false);
+    const tick = () => {
+      const diff = target - new Date();
+      if (diff <= 0) { setTimeLeft("Spotkanie już trwa!"); return; }
+      const d = pad(Math.floor(diff / 864e5));
+      const h = pad(Math.floor((diff / 36e5) % 24));
+      const m = pad(Math.floor((diff / 6e4) % 60));
+      const s = pad(Math.floor((diff / 1e3) % 60));
+      setTimeLeft(`${d}d ${h}:${m}:${s}`);
     };
-
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
-
-    return () => clearInterval(interval);
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
   }, []);
 
   return (
-    <span>
-      Następne spotkanie u {host} za {timeLeft}
+    <span style={{ fontSize: "0.85rem", opacity: 0.75 }}>
+      Następne spotkanie za {timeLeft}
     </span>
   );
 };
